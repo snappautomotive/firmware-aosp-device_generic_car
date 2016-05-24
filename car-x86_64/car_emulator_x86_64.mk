@@ -19,7 +19,7 @@ PRODUCT_COPY_FILES += \
 
 $(call inherit-product, build/target/product/aosp_x86_64.mk)
 $(call inherit-product, packages/services/Car/car_product/build/car.mk)
-PRODUCT_PACKAGE_OVERLAYS := device/generic/car/common/overlay
+PRODUCT_PACKAGE_OVERLAYS := packages/services/Car/car_product/overlay
 
 # Overrides
 PRODUCT_BRAND := google
