@@ -15,17 +15,17 @@
 
 PRODUCT_COPY_FILES += \
     device/generic/car/common/bootanimations/bootanimation-832.zip:system/media/bootanimation.zip \
-    device/generic/car/common/init.car-emulator.rc:root/init.goldfish.rc
+    device/generic/common/init.car-emulator.rc/init.car-armv7-a-neon.rc:root/init.goldfish.rc
 
-$(call inherit-product, build/target/product/aosp_x86_64.mk)
+$(call inherit-product, build/target/product/aosp_arm.mk)
 $(call inherit-product, packages/services/Car/car_product/build/car.mk)
 PRODUCT_PACKAGE_OVERLAYS := packages/services/Car/car_product/overlay
 
 # Overrides
 PRODUCT_BRAND := google
-PRODUCT_MODEL := Car on x86 emulator
-PRODUCT_NAME := car_emulator_x86_64
-PRODUCT_DEVICE := car-x86_64
+PRODUCT_MODEL := Car on ARM emulator
+PRODUCT_NAME := car_emulator_arm
+PRODUCT_DEVICE := car-armv7-a-neon
 
 PRODUCT_RESTRICT_VENDOR_FILES := false
 
