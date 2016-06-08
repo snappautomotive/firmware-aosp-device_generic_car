@@ -26,7 +26,6 @@ MINIMAL_FONT_FOOTPRINT := true
 
 
 # Build OpenGLES emulation libraries
-BUILD_EMULATOR := true
 BUILD_EMULATOR_OPENGL := true
 BUILD_EMULATOR_OPENGL_DRIVER := true
 
