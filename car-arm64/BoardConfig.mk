@@ -18,4 +18,5 @@ BOARD_FLASH_BLOCK_SIZE := 512
 TARGET_USERIMAGES_SPARSE_EXT_DISABLED := true
 
 BOARD_SEPOLICY_DIRS += \
-    packages/services/Car/car_product/sepolicy
+     packages/services/Car/car_product/sepolicy \
+     device/generic/car/common/sepolicy
