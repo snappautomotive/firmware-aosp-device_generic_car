@@ -2,7 +2,7 @@
 
 # See global logd.te, these only set for eng & userdebug, allow for all builds
 
-domain_auto_trans(init, logcat_exec, logd)
+#domain_auto_trans(init, logcat_exec, logd)
 
 # Read from logd.
 read_logd(logd)
