@@ -26,6 +26,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     egl.cfg \
     gralloc.goldfish \
+    gralloc.ranchu \
     libGLESv1_CM_emulation \
     lib_renderControl_enc \
     libEGL_emulation \
@@ -37,9 +38,12 @@ PRODUCT_PACKAGES += \
     qemu-props \
     qemud \
     camera.goldfish.jpeg \
+    camera.ranchu.jpeg \
     lights.goldfish \
     gps.goldfish \
+    gps.ranchu \
     sensors.goldfish \
+    sensors.ranchu \
     power.goldfish \
     audio.primary.goldfish
 
