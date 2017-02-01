@@ -47,6 +47,15 @@ PRODUCT_PACKAGES += \
     power.goldfish \
     audio.primary.goldfish
 
+# Keymaster HAL
+PRODUCT_PACKAGES += \
+    android.hardware.keymaster@3.0-impl
+
+ifeq ($(ENABLE_TREBLE), true)
+PRODUCT_PACKAGES += \
+    android.hardware.keymaster@3.0-service
+endif
+
 PRODUCT_COPY_FILES += \
     device/generic/goldfish/fstab.goldfish:root/fstab.goldfish \
     device/generic/goldfish/init.goldfish.rc:root/init.goldfish.rc \
