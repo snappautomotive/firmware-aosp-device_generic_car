@@ -15,4 +15,4 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/car_emulator_arm.mk
+    $(LOCAL_DIR)/car_emu_arm.mk

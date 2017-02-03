@@ -24,7 +24,7 @@ PRODUCT_PACKAGE_OVERLAYS := packages/services/Car/car_product/overlay
 # Overrides
 PRODUCT_BRAND := google
 PRODUCT_MODEL := Car on x86 emulator
-PRODUCT_NAME := car_emulator_x86_64
+PRODUCT_NAME := car_emu_x86_64
 PRODUCT_DEVICE := car-x86_64
 
 PRODUCT_RESTRICT_VENDOR_FILES := false

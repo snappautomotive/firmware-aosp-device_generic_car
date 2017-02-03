@@ -15,4 +15,4 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/car_emulator_x86_64.mk
+    $(LOCAL_DIR)/car_emu_x86_64.mk

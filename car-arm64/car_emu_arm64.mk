@@ -17,15 +17,15 @@ PRODUCT_COPY_FILES += \
     device/generic/car/common/bootanimations/bootanimation-832.zip:system/media/bootanimation.zip \
     device/generic/car/common/init.car-emulator.rc:root/init.goldfish.rc
 
-$(call inherit-product, device/generic/car/common/product/aosp_arm.mk)
+$(call inherit-product, device/generic/car/common/product/aosp_arm64.mk)
 $(call inherit-product, packages/services/Car/car_product/build/car.mk)
 PRODUCT_PACKAGE_OVERLAYS := packages/services/Car/car_product/overlay
 
 # Overrides
 PRODUCT_BRAND := google
 PRODUCT_MODEL := Car on ARM emulator
-PRODUCT_NAME := car_emulator_arm
-PRODUCT_DEVICE := car-armv7-a-neon
+PRODUCT_NAME := car_emu_arm64
+PRODUCT_DEVICE := car-arm64
 
 PRODUCT_RESTRICT_VENDOR_FILES := false
 
@@ -41,8 +41,7 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.type.automotive.xml:system/etc/permissions/android.hardware.type.automotive.xml \
-    frameworks/native/data/etc/android.hardware.screen.landscape.xml:system/etc/permissions/android.hardware.screen.landscape.xml \
-    frameworks/native/data/etc/android.software.freeform_window_management.xml:system/etc/permissions/android.software.freeform_window_management.xml
+    frameworks/native/data/etc/android.hardware.screen.landscape.xml:system/etc/permissions/android.hardware.screen.landscape.xml
 
 PRODUCT_PROPERTY_OVERRIDES += \
     android.car.drawer.unlimited=true \
