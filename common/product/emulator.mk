@@ -65,4 +65,14 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_PACKAGE_OVERLAYS := device/generic/goldfish/overlay
 
+# Vendor Interface Manifest
+PRODUCT_COPY_FILES += \
+    device/generic/car/common/product/manifest.xml:system/vendor/manifest.xml
+
+# Graphics HAL
+PRODUCT_PACKAGES += \
+    android.hardware.graphics.allocator@2.0-impl \
+    android.hardware.graphics.allocator@2.0-service \
+    android.hardware.graphics.mapper@2.0-impl
+
 PRODUCT_CHARACTERISTICS := emulator
