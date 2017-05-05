@@ -21,3 +21,4 @@
 # function: add_lunch_combo generic-eng
 
 add_lunch_combo car_emu_arm64-userdebug
+add_lunch_combo aosp_car_emu_arm64-userdebug
