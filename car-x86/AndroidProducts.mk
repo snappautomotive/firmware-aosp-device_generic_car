@@ -15,4 +15,5 @@
 #
 
 PRODUCT_MAKEFILES := \
+    $(LOCAL_DIR)/aosp_car_emu_x86.mk \
     $(LOCAL_DIR)/car_emu_x86.mk
