@@ -29,8 +29,8 @@ PRODUCT_DEVICE := car-arm64
 
 PRODUCT_RESTRICT_VENDOR_FILES := false
 
-PRODUCT_PACKAGES += \
-   vehicle.default
+PRODUCT_PACKAGES += android.hardware.automotive.vehicle@2.1-service
+
 # Replace framework versions with dummy one, which is essentially
 # the same as removing the xml. Needs this as there is no easy
 # way to remove PRODUCT_COPY_FILES from inherited products.
