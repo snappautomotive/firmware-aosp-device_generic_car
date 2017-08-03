@@ -67,7 +67,7 @@ PRODUCT_PACKAGE_OVERLAYS := device/generic/goldfish/overlay
 
 # Vendor Interface Manifest
 PRODUCT_COPY_FILES += \
-    device/generic/car/common/product/manifest.xml:system/vendor/manifest.xml
+    device/generic/car/common/product/manifest.xml:$(TARGET_COPY_OUT_VENDOR)/manifest.xml
 
 # Graphics HAL
 PRODUCT_PACKAGES += \

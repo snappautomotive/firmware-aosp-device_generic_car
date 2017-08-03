@@ -37,6 +37,11 @@ BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_FLASH_BLOCK_SIZE := 512
 TARGET_USERIMAGES_SPARSE_EXT_DISABLED := true
 
+# Enable Vendor Image
+TARGET_COPY_OUT_VENDOR := vendor
+BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_VENDORIMAGE_PARTITION_SIZE := 1610612736
+
 BOARD_SEPOLICY_DIRS += \
      packages/services/Car/car_product/sepolicy \
      device/generic/car/common/sepolicy
