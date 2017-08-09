@@ -1,5 +1,5 @@
 #
-#Copyright (C) 2016 The Android Open Source Project
+# Copyright (C) 2017 The Android Open-Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-$(call inherit-product, device/generic/car/car-armv7-a-neon/aosp_car_emu_arm.mk)
-PRODUCT_NAME := car_emu_arm
+PRODUCT_MAKEFILES := \
+    $(LOCAL_DIR)/car-arm64/aosp_car_emu_arm64.mk \
+    $(LOCAL_DIR)/car-armv7-a-neon/aosp_car_emu_arm.mk \
+    $(LOCAL_DIR)/car-x86/aosp_car_emu_x86.mk \
+    $(LOCAL_DIR)/car-x86_64/aosp_car_emu_x86_64.mk \
