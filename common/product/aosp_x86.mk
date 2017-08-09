@@ -13,37 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+include device/generic/car/common/product/full_x86.mk
 
-# This is a build configuration for a full-featured build of the
-# Open-Source part of the tree. It's geared toward a US-centric
-# build quite specifically for the emulator, and might not be
-# entirely appropriate to inherit from for on-device configurations.
-
-# If running on an emulator or some other device that has a LAN connection
-# that isn't a wifi connection. This will instruct init.rc to enable the
-# network connection so that you can use it with ADB
-
-# This is for enabling ethernet support for ranchu.
-# Consider removing this after RIL support is provided in ranchu.
-PRODUCT_COPY_FILES += frameworks/native/data/etc/android.hardware.ethernet.xml:system/etc/permissions/android.hardware.ethernet.xml
-
-$(call inherit-product, $(SRC_TARGET_DIR)/product/core.mk)
-$(call inherit-product, device/generic/car/common/product/aosp_base_telephony.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/board/generic_x86/device.mk)
-
-include device/generic/car/common/product/emulator.mk
-
-ifdef NET_ETH0_STARTONBOOT
-  PRODUCT_PROPERTY_OVERRIDES += net.eth0.startonboot=1
-endif
-
-# Ensure we package the BIOS files too.
-PRODUCT_PACKAGES += \
-	bios.bin \
-	vgabios-cirrus.bin \
-
-# Overrides
 PRODUCT_NAME := aosp_x86
-PRODUCT_DEVICE := generic_x86
-PRODUCT_BRAND := Android
-PRODUCT_MODEL := AOSP on IA x86 Emulator

@@ -50,4 +50,14 @@ PRODUCT_PACKAGES += \
     VpnDialogs \
     MmsService
 
+# The set of packages whose code can be loaded by the system server.
+PRODUCT_SYSTEM_SERVER_APPS += \
+    FusedLocation \
+    InputDevices \
+    KeyChain \
+    Telecom \
+
+# The set of packages we want to force 'speed' compilation on.
+PRODUCT_DEXPREOPT_SPEED_APPS += \
+
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_base.mk)
