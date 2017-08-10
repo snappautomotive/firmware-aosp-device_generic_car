@@ -16,6 +16,8 @@
 
 include $(SRC_TARGET_DIR)/board/generic_x86_64/BoardConfig.mk
 
+TARGET_USES_CAR_FUTURE_FEATURES := true
+
 # Enable Vendor Image
 TARGET_COPY_OUT_VENDOR := vendor
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
