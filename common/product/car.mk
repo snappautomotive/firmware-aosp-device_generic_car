@@ -26,7 +26,6 @@ PRODUCT_PACKAGES += \
 # way to remove PRODUCT_COPY_FILES from inherited products.
 PRODUCT_COPY_FILES += \
     device/generic/car/common/android.hardware.dummy.xml:system/etc/permissions/handheld_core_hardware.xml \
-    device/generic/car/common/bootanimations/bootanimation-832.zip:system/media/bootanimation.zip \
     frameworks/native/data/etc/android.hardware.screen.landscape.xml:system/etc/permissions/android.hardware.screen.landscape.xml \
     packages/services/Car/car_product/init/init.bootstat.rc:root/init.bootstat.rc \
     packages/services/Car/car_product/init/init.car.rc:root/init.car.rc \
