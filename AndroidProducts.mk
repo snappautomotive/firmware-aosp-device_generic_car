@@ -15,7 +15,7 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/car-arm64/aosp_car_emu_arm64.mk \
-    $(LOCAL_DIR)/car-armv7-a-neon/aosp_car_emu_arm.mk \
-    $(LOCAL_DIR)/car-x86/aosp_car_emu_x86.mk \
-    $(LOCAL_DIR)/car-x86_64/aosp_car_emu_x86_64.mk \
+    $(LOCAL_DIR)/aosp_car_emu_arm64.mk \
+    $(LOCAL_DIR)/aosp_car_emu_arm.mk \
+    $(LOCAL_DIR)/aosp_car_emu_x86.mk \
+    $(LOCAL_DIR)/aosp_car_emu_x86_64.mk \
