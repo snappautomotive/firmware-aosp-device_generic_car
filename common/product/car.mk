@@ -19,7 +19,7 @@ PRODUCT_RESTRICT_VENDOR_FILES := false
 
 # Auto modules
 PRODUCT_PACKAGES += \
-    android.hardware.automotive.vehicle@2.1-service
+    android.hardware.automotive.vehicle@2.0-service
 
 # Replace framework versions with dummy one, which is essentially
 # the same as removing the xml. Needs this as there is no easy
