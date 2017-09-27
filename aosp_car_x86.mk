@@ -14,9 +14,9 @@
 # limitations under the License.
 
 $(call inherit-product, device/generic/car/common/car.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_x86_64.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_x86.mk)
 
-PRODUCT_NAME := aosp_car_emu_x86_64
-PRODUCT_DEVICE := generic_x86_64
+PRODUCT_NAME := aosp_car_x86
+PRODUCT_DEVICE := generic_x86
 PRODUCT_BRAND := Android
-PRODUCT_MODEL := Car on x86_64 emulator
+PRODUCT_MODEL := Car on x86 emulator
