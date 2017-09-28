@@ -16,7 +16,7 @@
 $(call inherit-product, device/generic/car/common/car.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_arm.mk)
 
-PRODUCT_NAME := aosp_car_emu_arm
+PRODUCT_NAME := aosp_car_arm
 PRODUCT_DEVICE := generic
 PRODUCT_BRAND := Android
 PRODUCT_MODEL := Car on arm64 emulator
