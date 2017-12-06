@@ -1,5 +1,5 @@
 #
-#Copyright (C) 2016 The Android Open Source Project
+# Copyright (C) 2016 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$(call inherit-product, device/generic/car/car-arm64/aosp_car_emu_arm64.mk)
+$(call inherit-product, device/generic/car/common/car.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_arm.mk)
 
-PRODUCT_NAME := car_emu_arm64
+PRODUCT_NAME := aosp_car_arm
+PRODUCT_DEVICE := generic
+PRODUCT_BRAND := Android
+PRODUCT_MODEL := Car on arm64 emulator

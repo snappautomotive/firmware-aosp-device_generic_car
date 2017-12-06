@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016 The Android Open Source Project
+# Copyright (C) 2017 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-# This file is executed by build/envsetup.sh, and can use anything
-# defined in envsetup.sh.
-#
-# In particular, you can add lunch options with the add_lunch_combo
-# function: add_lunch_combo generic-eng
+$(call inherit-product, device/generic/car/common/car.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_x86_64.mk)
 
-add_lunch_combo car_emu_x86_64-userdebug
-add_lunch_combo aosp_car_emu_x86_64-userdebug
+PRODUCT_NAME := aosp_car_x86_64
+PRODUCT_DEVICE := generic_x86_64
+PRODUCT_BRAND := Android
+PRODUCT_MODEL := Car on x86_64 emulator
