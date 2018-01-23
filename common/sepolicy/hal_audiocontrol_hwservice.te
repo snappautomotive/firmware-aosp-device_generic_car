@@ -1,0 +1,1 @@
+add_hwservice(hal_audiocontrol_default, hal_audiocontrol_hwservice)
