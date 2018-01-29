@@ -17,8 +17,6 @@
 # TODO Remove this when AAE is fully treble ready
 PRODUCT_FULL_TREBLE_OVERRIDE := false
 
-DEVICE_PACKAGE_OVERLAYS =: device/generic/car/overlay
-
 # Auto modules
 PRODUCT_PACKAGES += \
     android.hardware.automotive.vehicle@2.0-service
