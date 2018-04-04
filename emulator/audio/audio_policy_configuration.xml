@@ -60,6 +60,8 @@
                 <item>bus6_notification_out</item>
                 <item>bus7_system_sound_out</item>
                 <item>bus0_mic1_in</item>
+                <!-- Test input device port for audio patch -->
+                <item>bus1_audio_patch_test_in</item>
             </attachedDevices>
             <defaultOutputDevice>bus0_media_out</defaultOutputDevice>
             <mixPorts>
@@ -112,6 +114,15 @@
                              channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                 </mixPort>
                 <mixPort name="mixport_bus0_mic1_in" role="sink">
+                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                             samplingRates="48000"
+                             channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
+                </mixPort>
+                <!--
+                  Test mixport for audio patch,
+                  this needs to be present to work around the framework limitation
+                -->
+                <mixPort name="mixport_audio_patch_in" role="sink">
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
                              samplingRates="48000"
                              channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
@@ -194,6 +205,20 @@
                         address="bus0_mic1_in">
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
+                    <gains>
+                        <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
+                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                    </gains>
+                </devicePort>
+                <!-- Test input device ports for audio patch -->
+                <devicePort tagName="bus1_audio_patch_test_in" type="AUDIO_DEVICE_IN_BUS" role="source"
+                        address="bus1_audio_patch_test_in">
+                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                            samplingRates="48000" channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
+                    <gains>
+                        <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
+                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                    </gains>
                 </devicePort>
             </devicePorts>
             <!-- route declaration, i.e. list all available sources for a given sink -->
@@ -207,6 +232,11 @@
                 <route type="mix" sink="bus6_notification_out" sources="mixport_bus6_notification_out"/>
                 <route type="mix" sink="bus7_system_sound_out" sources="mixport_bus7_system_sound_out"/>
                 <route type="mix" sink="mixport_bus0_mic1_in" sources="bus0_mic1_in"/>
+                <!--
+                  Listed source device ports will be routed to desired sinks via audio patch,
+                  this route needs to be present to work around framework limitation for now
+                -->
+                <route type="mix" sink="mixport_audio_patch_in" sources="bus1_audio_patch_test_in"/>
             </routes>
 
         </module>
