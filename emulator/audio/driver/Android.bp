@@ -21,7 +21,11 @@ cc_library_shared {
     name: "audio.primary.caremu",
     relative_install_path: "hw",
 
-    srcs: ["audio_hw.c"],
+    srcs: [
+        "audio_hw.c",
+        "audio_vbuffer.c",
+        "ext_pcm.c",
+    ],
 
     include_dirs: ["external/tinyalsa/include"],
 
