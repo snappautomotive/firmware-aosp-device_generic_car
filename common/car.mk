@@ -51,8 +51,4 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 TARGET_USES_CAR_FUTURE_FEATURES := true
 
-# Add car related sepolicy.
-BOARD_SEPOLICY_DIRS += \
-    device/generic/car/common/sepolicy \
-
 $(call inherit-product, packages/services/Car/car_product/build/car.mk)
