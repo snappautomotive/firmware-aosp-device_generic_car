@@ -59,6 +59,8 @@
                 <item>bus5_alarm_out</item>
                 <item>bus6_notification_out</item>
                 <item>bus7_system_sound_out</item>
+                <item>Built-In Mic</item>
+                <item>Built-In Back Mic</item>
                 <item>bus0_mic1_in</item>
                 <!-- Test input device port for audio patch -->
                 <item>bus1_audio_patch_test_in</item>
@@ -112,6 +114,11 @@
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
                              samplingRates="48000"
                              channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+                </mixPort>
+                <mixPort name="primary input" role="sink">
+                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                             samplingRates="8000,11025,12000,16000,22050,24000,32000,44100,48000"
+                             channelMasks="AUDIO_CHANNEL_IN_MONO,AUDIO_CHANNEL_IN_STEREO,AUDIO_CHANNEL_IN_FRONT_BACK"/>
                 </mixPort>
                 <mixPort name="mixport_bus0_mic1_in" role="sink">
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
@@ -201,6 +208,16 @@
                                 minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
+                <devicePort tagName="Built-In Mic" type="AUDIO_DEVICE_IN_BUILTIN_MIC" role="source">
+                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                            samplingRates="8000,11025,12000,16000,22050,24000,32000,44100,48000"
+                            channelMasks="AUDIO_CHANNEL_IN_MONO,AUDIO_CHANNEL_IN_STEREO,AUDIO_CHANNEL_IN_FRONT_BACK"/>
+                </devicePort>
+                <devicePort tagName="Built-In Back Mic" type="AUDIO_DEVICE_IN_BACK_MIC" role="source">
+                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                            samplingRates="8000,11025,12000,16000,22050,24000,32000,44100,48000"
+                            channelMasks="AUDIO_CHANNEL_IN_MONO,AUDIO_CHANNEL_IN_STEREO,AUDIO_CHANNEL_IN_FRONT_BACK"/>
+                </devicePort>
                 <devicePort tagName="bus0_mic1_in" type="AUDIO_DEVICE_IN_BUS" role="source"
                         address="bus0_mic1_in">
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
@@ -231,6 +248,7 @@
                 <route type="mix" sink="bus5_alarm_out" sources="mixport_bus5_alarm_out"/>
                 <route type="mix" sink="bus6_notification_out" sources="mixport_bus6_notification_out"/>
                 <route type="mix" sink="bus7_system_sound_out" sources="mixport_bus7_system_sound_out"/>
+                <route type="mix" sink="primary input" sources="Built-In Mic,Built-In Back Mic"/>
                 <route type="mix" sink="mixport_bus0_mic1_in" sources="bus0_mic1_in"/>
                 <!--
                   Listed source device ports will be routed to desired sinks via audio patch,
