@@ -258,7 +258,8 @@ static void *out_write_worker(void *args) {
         }
         int frames = audio_vbuffer_read(&out->buffer, buffer, buffer_frames);
         pthread_mutex_unlock(&out->lock);
-        int write_error = ext_pcm_write(ext_pcm, buffer, ext_pcm_frames_to_bytes(ext_pcm, frames));
+        int write_error = ext_pcm_write(ext_pcm, out->bus_address,
+                buffer, ext_pcm_frames_to_bytes(ext_pcm, frames));
         if (write_error) {
             ALOGE("pcm_write failed %s address %s", ext_pcm_get_error(ext_pcm), out->bus_address);
             restart = true;
