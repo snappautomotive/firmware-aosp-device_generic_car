@@ -24,7 +24,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <inttypes.h>
-#include <pthread.h>
+#include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/time.h>
@@ -33,13 +33,13 @@
 #include <unistd.h>
 
 #include <log/log.h>
-#include <cutils/hashmap.h>
 #include <cutils/str_parms.h>
 
 #include <hardware/hardware.h>
 #include <system/audio.h>
-#include <hardware/audio.h>
-#include <tinyalsa/asoundlib.h>
+
+#include "audio_hw.h"
+#include "ext_pcm.h"
 
 #define PCM_CARD 0
 #define PCM_DEVICE 0
@@ -50,182 +50,7 @@
 #define IN_PERIOD_MS 15
 #define IN_PERIOD_COUNT 4
 
-struct generic_audio_device {
-    struct audio_hw_device device; // Constant after init
-    pthread_mutex_t lock;
-    bool mic_mute;                 // Proteced by this->lock
-    struct mixer *mixer;           // Proteced by this->lock
-    Hashmap *out_bus_stream_map;   // Extended field. Constant after init
-};
-
 static int adev_get_mic_mute(const struct audio_hw_device *dev, bool *state);
-
-typedef struct audio_vbuffer {
-    pthread_mutex_t lock;
-    uint8_t    *data;
-    size_t     frame_size;
-    size_t     frame_count;
-    size_t     head;
-    size_t     tail;
-    size_t     live;
-} audio_vbuffer_t;
-
-static int audio_vbuffer_init(audio_vbuffer_t *audio_vbuffer, size_t frame_count,
-        size_t frame_size) {
-    if (!audio_vbuffer) {
-        return -EINVAL;
-    }
-    audio_vbuffer->frame_size = frame_size;
-    audio_vbuffer->frame_count = frame_count;
-    size_t bytes = frame_count * frame_size;
-    audio_vbuffer->data = calloc(bytes, 1);
-    if (!audio_vbuffer->data) {
-        return -ENOMEM;
-    }
-    audio_vbuffer->head = 0;
-    audio_vbuffer->tail = 0;
-    audio_vbuffer->live = 0;
-    pthread_mutex_init(&audio_vbuffer->lock, (const pthread_mutexattr_t *) NULL);
-    return 0;
-}
-
-static int audio_vbuffer_destroy(audio_vbuffer_t *audio_vbuffer) {
-    if (!audio_vbuffer) {
-        return -EINVAL;
-    }
-    free(audio_vbuffer->data);
-    pthread_mutex_destroy(&audio_vbuffer->lock);
-    return 0;
-}
-
-static int audio_vbuffer_live(audio_vbuffer_t *audio_vbuffer) {
-    if (!audio_vbuffer) {
-        return -EINVAL;
-    }
-    pthread_mutex_lock(&audio_vbuffer->lock);
-    int live = audio_vbuffer->live;
-    pthread_mutex_unlock(&audio_vbuffer->lock);
-    return live;
-}
-
-static int audio_vbuffer_dead(audio_vbuffer_t *audio_vbuffer) {
-    if (!audio_vbuffer) {
-        return -EINVAL;
-    }
-    pthread_mutex_lock(&audio_vbuffer->lock);
-    int dead = audio_vbuffer->frame_count - audio_vbuffer->live;
-    pthread_mutex_unlock(&audio_vbuffer->lock);
-    return dead;
-}
-
-#define MIN(a,b) (((a)<(b))?(a):(b))
-static size_t audio_vbuffer_write(audio_vbuffer_t *audio_vbuffer, const void *buffer,
-        size_t frame_count) {
-    size_t frames_written = 0;
-    pthread_mutex_lock(&audio_vbuffer->lock);
-
-    while (frame_count != 0) {
-        int frames = 0;
-        if (audio_vbuffer->live == 0 || audio_vbuffer->head > audio_vbuffer->tail) {
-            frames = MIN(frame_count, audio_vbuffer->frame_count - audio_vbuffer->head);
-        } else if (audio_vbuffer->head < audio_vbuffer->tail) {
-            frames = MIN(frame_count, audio_vbuffer->tail - (audio_vbuffer->head));
-        } else {
-            ALOGD("%s audio_vbuffer is full", __func__);
-            break;
-        }
-        memcpy(&audio_vbuffer->data[audio_vbuffer->head*audio_vbuffer->frame_size],
-               &((uint8_t*)buffer)[frames_written*audio_vbuffer->frame_size],
-               frames*audio_vbuffer->frame_size);
-        audio_vbuffer->live += frames;
-        frames_written += frames;
-        frame_count -= frames;
-        audio_vbuffer->head = (audio_vbuffer->head + frames) % audio_vbuffer->frame_count;
-    }
-
-    pthread_mutex_unlock(&audio_vbuffer->lock);
-    return frames_written;
-}
-
-static size_t audio_vbuffer_read(audio_vbuffer_t *audio_vbuffer, void *buffer,
-        size_t frame_count) {
-    size_t frames_read = 0;
-    pthread_mutex_lock(&audio_vbuffer->lock);
-
-    while (frame_count != 0) {
-        int frames = 0;
-        if (audio_vbuffer->live == audio_vbuffer->frame_count ||
-            audio_vbuffer->tail > audio_vbuffer->head) {
-            frames = MIN(frame_count, audio_vbuffer->frame_count - audio_vbuffer->tail);
-        } else if (audio_vbuffer->tail < audio_vbuffer->head) {
-            frames = MIN(frame_count, audio_vbuffer->head - audio_vbuffer->tail);
-        } else {
-            break;
-        }
-        memcpy(&((uint8_t*)buffer)[frames_read*audio_vbuffer->frame_size],
-               &audio_vbuffer->data[audio_vbuffer->tail*audio_vbuffer->frame_size],
-               frames*audio_vbuffer->frame_size);
-        audio_vbuffer->live -= frames;
-        frames_read += frames;
-        frame_count -= frames;
-        audio_vbuffer->tail = (audio_vbuffer->tail + frames) % audio_vbuffer->frame_count;
-    }
-
-    pthread_mutex_unlock(&audio_vbuffer->lock);
-    return frames_read;
-}
-
-struct generic_stream_out {
-    struct audio_stream_out stream;   // Constant after init
-    pthread_mutex_t lock;
-    struct generic_audio_device *dev; // Constant after init
-    audio_devices_t device;           // Protected by this->lock
-    struct audio_config req_config;   // Constant after init
-    struct pcm_config pcm_config;     // Constant after init
-    audio_vbuffer_t buffer;           // Constant after init
-    const char *bus_address;          // Extended field. Constant after init
-
-    // Time & Position Keeping
-    bool standby;                      // Protected by this->lock
-    uint64_t underrun_position;        // Protected by this->lock
-    struct timespec underrun_time;     // Protected by this->lock
-    uint64_t last_write_time_us;       // Protected by this->lock
-    uint64_t frames_total_buffered;    // Protected by this->lock
-    uint64_t frames_written;           // Protected by this->lock
-    uint64_t frames_rendered;          // Protected by this->lock
-
-    // Worker
-    pthread_t worker_thread;          // Constant after init
-    pthread_cond_t worker_wake;       // Protected by this->lock
-    bool worker_standby;              // Protected by this->lock
-    bool worker_exit;                 // Protected by this->lock
-};
-
-struct generic_stream_in {
-    struct audio_stream_in stream;    // Constant after init
-    pthread_mutex_t lock;
-    struct generic_audio_device *dev; // Constant after init
-    audio_devices_t device;           // Protected by this->lock
-    struct audio_config req_config;   // Constant after init
-    struct pcm *pcm;                  // Protected by this->lock
-    struct pcm_config pcm_config;     // Constant after init
-    int16_t *stereo_to_mono_buf;      // Protected by this->lock
-    size_t stereo_to_mono_buf_size;   // Protected by this->lock
-    audio_vbuffer_t buffer;           // Protected by this->lock
-    const char *bus_address;          // Extended field. Constant after init
-
-    // Time & Position Keeping
-    bool standby;                     // Protected by this->lock
-    int64_t standby_position;         // Protected by this->lock
-    struct timespec standby_exit_time;// Protected by this->lock
-    int64_t standby_frames_read;      // Protected by this->lock
-
-    // Worker
-    pthread_t worker_thread;          // Constant after init
-    pthread_cond_t worker_wake;       // Protected by this->lock
-    bool worker_standby;              // Protected by this->lock
-    bool worker_exit;                 // Protected by this->lock
-};
 
 static struct pcm_config pcm_config_out = {
     .channels = 2,
@@ -290,6 +115,7 @@ static int out_dump(const struct audio_stream *stream, int fd) {
                 "\t\tchannel mask: %08x\n"
                 "\t\tformat: %d\n"
                 "\t\tdevice: %08x\n"
+                "\t\tamplitude ratio: %f\n"
                 "\t\taudio dev: %p\n\n",
                 out->bus_address,
                 out_get_sample_rate(stream),
@@ -297,6 +123,7 @@ static int out_dump(const struct audio_stream *stream, int fd) {
                 out_get_channels(stream),
                 out_get_format(stream),
                 out->device,
+                out->amplitude_ratio,
                 out->dev);
     pthread_mutex_unlock(&out->lock);
     return 0;
@@ -369,7 +196,7 @@ static int out_set_volume(struct audio_stream_out *stream,
 
 static void *out_write_worker(void *args) {
     struct generic_stream_out *out = (struct generic_stream_out *)args;
-    struct pcm *pcm = NULL;
+    struct ext_pcm *ext_pcm = NULL;
     uint8_t *buffer = NULL;
     int buffer_frames;
     int buffer_size;
@@ -379,9 +206,9 @@ static void *out_write_worker(void *args) {
         pthread_mutex_lock(&out->lock);
         while (out->worker_standby || restart) {
             restart = false;
-            if (pcm) {
-                pcm_close(pcm); // Frees pcm
-                pcm = NULL;
+            if (ext_pcm) {
+                ext_pcm_close(ext_pcm); // Frees pcm
+                ext_pcm = NULL;
                 free(buffer);
                 buffer=NULL;
             }
@@ -407,12 +234,12 @@ static void *out_write_worker(void *args) {
             break;
         }
 
-        if (!pcm) {
-            pcm = pcm_open(PCM_CARD, PCM_DEVICE,
+        if (!ext_pcm) {
+            ext_pcm = ext_pcm_open(PCM_CARD, PCM_DEVICE,
                     PCM_OUT | PCM_MONOTONIC, &out->pcm_config);
-            if (!pcm_is_ready(pcm)) {
+            if (!ext_pcm_is_ready(ext_pcm)) {
                 ALOGE("pcm_open(out) failed: %s: address %s channels %d format %d rate %d",
-                        pcm_get_error(pcm),
+                        ext_pcm_get_error(ext_pcm),
                         out->bus_address,
                         out->pcm_config.channels,
                         out->pcm_config.format,
@@ -421,7 +248,7 @@ static void *out_write_worker(void *args) {
                 break;
             }
             buffer_frames = out->pcm_config.period_size;
-            buffer_size = pcm_frames_to_bytes(pcm, buffer_frames);
+            buffer_size = ext_pcm_frames_to_bytes(ext_pcm, buffer_frames);
             buffer = malloc(buffer_size);
             if (!buffer) {
                 ALOGE("could not allocate write buffer");
@@ -431,9 +258,10 @@ static void *out_write_worker(void *args) {
         }
         int frames = audio_vbuffer_read(&out->buffer, buffer, buffer_frames);
         pthread_mutex_unlock(&out->lock);
-        int write_error = pcm_write(pcm, buffer, pcm_frames_to_bytes(pcm, frames));
+        int write_error = ext_pcm_write(ext_pcm, out->bus_address,
+                buffer, ext_pcm_frames_to_bytes(ext_pcm, frames));
         if (write_error) {
-            ALOGE("pcm_write failed %s address %s", pcm_get_error(pcm), out->bus_address);
+            ALOGE("pcm_write failed %s address %s", ext_pcm_get_error(ext_pcm), out->bus_address);
             restart = true;
         } else {
             ALOGD("pcm_write succeed address %s", out->bus_address);
@@ -484,6 +312,18 @@ static void get_current_output_position(struct generic_stream_out *out,
     }
 }
 
+// Applies gain naively, assume AUDIO_FORMAT_PCM_16_BIT
+static void out_apply_gain(struct generic_stream_out *out, const void *buffer, size_t bytes) {
+    int16_t *int16_buffer = (int16_t *)buffer;
+    size_t int16_size = bytes / sizeof(int16_t);
+    for (int i = 0; i < int16_size; i++) {
+         float multiplied = int16_buffer[i] * out->amplitude_ratio;
+         if (multiplied > INT16_MAX) int16_buffer[i] = INT16_MAX;
+         else if (multiplied < INT16_MIN) int16_buffer[i] = INT16_MIN;
+         else int16_buffer[i] = (int16_t)multiplied;
+    }
+}
+
 static ssize_t out_write(struct audio_stream_out *stream, const void *buffer, size_t bytes) {
     struct generic_stream_out *out = (struct generic_stream_out *)stream;
     const size_t frames =  bytes / audio_stream_out_frame_size(stream);
@@ -507,6 +347,7 @@ static ssize_t out_write(struct audio_stream_out *stream, const void *buffer, si
         out->frames_total_buffered = 0;
     }
 
+    out_apply_gain(out, buffer, bytes);
     size_t frames_written = audio_vbuffer_write(&out->buffer, buffer, frames);
     pthread_cond_signal(&out->worker_wake);
 
@@ -926,7 +767,7 @@ static void *in_read_worker(void *args) {
                 break;
             }
             buffer_frames = in->pcm_config.period_size;
-            buffer_size = pcm_frames_to_bytes(pcm, buffer_frames);
+            buffer_size = ext_pcm_frames_to_bytes(pcm, buffer_frames);
             buffer = malloc(buffer_size);
             if (!buffer) {
                 ALOGE("could not allocate worker read buffer");
@@ -935,7 +776,7 @@ static void *in_read_worker(void *args) {
             }
         }
         pthread_mutex_unlock(&in->lock);
-        int ret = pcm_read(pcm, buffer, pcm_frames_to_bytes(pcm, buffer_frames));
+        int ret = pcm_read(pcm, buffer, ext_pcm_frames_to_bytes(pcm, buffer_frames));
         if (ret != 0) {
             ALOGW("pcm_read failed %s", pcm_get_error(pcm));
             restart = true;
@@ -1144,6 +985,13 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
         out->bus_address = calloc(strlen(address) + 1, sizeof(char));
         strncpy(out->bus_address, address, strlen(address));
         hashmapPut(adev->out_bus_stream_map, out->bus_address, out);
+        /* TODO: read struct audio_gain from audio_policy_configuration */
+        out->gain_stage = (struct audio_gain) {
+            .min_value = -8400,
+            .max_value = 4000,
+            .step_value = 100,
+        };
+        out->amplitude_ratio = 1.0;
     }
     *stream_out = &out->stream;
     ALOGD("%s bus:%s", __func__, out->bus_address);
@@ -1341,17 +1189,29 @@ static int adev_dump(const audio_hw_device_t *dev, int fd) {
 
 static int adev_set_audio_port_config(struct audio_hw_device *dev,
         const struct audio_port_config *config) {
+    int ret = 0;
     struct generic_audio_device *adev = (struct generic_audio_device *)dev;
     const char *bus_address = config->ext.device.address;
     struct generic_stream_out *out = hashmapGet(adev->out_bus_stream_map, bus_address);
     if (out) {
-        // TODO set the actual audio port gain on physical bus
-        ALOGD("%s: set audio gain: %d on bus_address:%s",
-                __func__, config->gain.values[0], bus_address);
+        pthread_mutex_lock(&out->lock);
+        int gainIndex = (config->gain.values[0] - out->gain_stage.min_value) /
+            out->gain_stage.step_value;
+        int totalSteps = (out->gain_stage.max_value - out->gain_stage.min_value) /
+            out->gain_stage.step_value;
+        int minDb = out->gain_stage.min_value / 100;
+        int maxDb = out->gain_stage.max_value / 100;
+        // curve: 10^((minDb + (maxDb - minDb) * gainIndex / totalSteps) / 20)
+        out->amplitude_ratio = pow(10,
+                (minDb + (maxDb - minDb) * (gainIndex / (float)totalSteps)) / 20);
+        pthread_mutex_unlock(&out->lock);
+        ALOGD("%s: set audio gain: %f on %s",
+                __func__, out->amplitude_ratio, bus_address);
     } else {
         ALOGE("%s: can not find output stream by bus_address:%s", __func__, bus_address);
+        ret = -EINVAL;
     }
-    return 0;
+    return ret;
 }
 
 static int adev_create_audio_patch(struct audio_hw_device *dev,
