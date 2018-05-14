@@ -767,7 +767,7 @@ static void *in_read_worker(void *args) {
                 break;
             }
             buffer_frames = in->pcm_config.period_size;
-            buffer_size = ext_pcm_frames_to_bytes(pcm, buffer_frames);
+            buffer_size = pcm_frames_to_bytes(pcm, buffer_frames);
             buffer = malloc(buffer_size);
             if (!buffer) {
                 ALOGE("could not allocate worker read buffer");
@@ -776,7 +776,7 @@ static void *in_read_worker(void *args) {
             }
         }
         pthread_mutex_unlock(&in->lock);
-        int ret = pcm_read(pcm, buffer, ext_pcm_frames_to_bytes(pcm, buffer_frames));
+        int ret = pcm_read(pcm, buffer, pcm_frames_to_bytes(pcm, buffer_frames));
         if (ret != 0) {
             ALOGW("pcm_read failed %s", pcm_get_error(pcm));
             restart = true;
