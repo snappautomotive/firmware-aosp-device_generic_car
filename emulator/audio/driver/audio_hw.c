@@ -987,8 +987,8 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
         hashmapPut(adev->out_bus_stream_map, out->bus_address, out);
         /* TODO: read struct audio_gain from audio_policy_configuration */
         out->gain_stage = (struct audio_gain) {
-            .min_value = -8400,
-            .max_value = 4000,
+            .min_value = -3200,
+            .max_value = 600,
             .step_value = 100,
         };
         out->amplitude_ratio = 1.0;
