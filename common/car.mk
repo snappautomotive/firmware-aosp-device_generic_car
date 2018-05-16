@@ -14,9 +14,6 @@
 # limitations under the License.
 #
 
-# TODO Remove this when AAE is fully treble ready
-PRODUCT_FULL_TREBLE_OVERRIDE := false
-
 # Auto modules
 PRODUCT_PACKAGES += \
     android.hardware.automotive.vehicle@2.0-service

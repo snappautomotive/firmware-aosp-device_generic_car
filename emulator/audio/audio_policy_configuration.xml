@@ -142,7 +142,7 @@
                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                     <gains>
                         <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
-                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                                minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
                 <devicePort tagName="bus1_navigation_out" role="sink" type="AUDIO_DEVICE_OUT_BUS"
@@ -151,7 +151,7 @@
                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                     <gains>
                         <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
-                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                                minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
                 <devicePort tagName="bus2_voice_command_out" role="sink" type="AUDIO_DEVICE_OUT_BUS"
@@ -160,7 +160,7 @@
                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                     <gains>
                         <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
-                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                                minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
                 <devicePort tagName="bus3_call_ring_out" role="sink" type="AUDIO_DEVICE_OUT_BUS"
@@ -169,7 +169,7 @@
                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                     <gains>
                         <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
-                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                                minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
                 <devicePort tagName="bus4_call_out" role="sink" type="AUDIO_DEVICE_OUT_BUS"
@@ -178,7 +178,7 @@
                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                     <gains>
                         <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
-                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                                minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
                 <devicePort tagName="bus5_alarm_out" role="sink" type="AUDIO_DEVICE_OUT_BUS"
@@ -187,7 +187,7 @@
                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                     <gains>
                         <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
-                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                                minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
                 <devicePort tagName="bus6_notification_out" role="sink" type="AUDIO_DEVICE_OUT_BUS"
@@ -196,7 +196,7 @@
                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                     <gains>
                         <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
-                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                                minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
                 <devicePort tagName="bus7_system_sound_out" role="sink" type="AUDIO_DEVICE_OUT_BUS"
@@ -205,7 +205,7 @@
                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
                     <gains>
                         <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
-                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                                minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
                 <devicePort tagName="Built-In Mic" type="AUDIO_DEVICE_IN_BUILTIN_MIC" role="source">
@@ -224,7 +224,7 @@
                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
                     <gains>
                         <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
-                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                                minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
                 <!-- Test input device ports for audio patch -->
@@ -234,7 +234,7 @@
                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
                     <gains>
                         <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
-                                minValueMB="-8400" maxValueMB="4000" defaultValueMB="0" stepValueMB="100"/>
+                                minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
             </devicePorts>
