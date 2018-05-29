@@ -28,6 +28,7 @@
 struct generic_audio_device {
   struct audio_hw_device device;  // Constant after init
   pthread_mutex_t lock;
+  bool master_mute;             // Proteced by this->lock
   bool mic_mute;                // Proteced by this->lock
   struct mixer *mixer;          // Proteced by this->lock
   Hashmap *out_bus_stream_map;  // Extended field. Constant after init
