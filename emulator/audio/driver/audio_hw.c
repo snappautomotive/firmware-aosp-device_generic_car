@@ -1237,7 +1237,7 @@ static int adev_create_audio_patch(struct audio_hw_device *dev,
         unsigned int num_sinks,
         const struct audio_port_config *sinks,
         audio_patch_handle_t *handle) {
-    // Logging only, no real work is done here
+    struct generic_audio_device *audio_dev = (struct generic_audio_device *)dev;
     for (int i = 0; i < num_sources; i++) {
         ALOGD("%s: source[%d] type=%d address=%s", __func__, i, sources[i].type,
                 sources[i].type == AUDIO_PORT_TYPE_DEVICE
@@ -1252,8 +1252,10 @@ static int adev_create_audio_patch(struct audio_hw_device *dev,
     if (num_sources == 1 && num_sinks == 1 &&
             sources[0].type == AUDIO_PORT_TYPE_DEVICE &&
             sinks[0].type == AUDIO_PORT_TYPE_DEVICE) {
-        // The same audio_patch_handle_t will be passed to release_audio_patch
-        *handle = 42;
+        pthread_mutex_lock(&audio_dev->lock);
+        audio_dev->last_patch_id += 1;
+        pthread_mutex_unlock(&audio_dev->lock);
+        *handle = audio_dev->last_patch_id;
         ALOGD("%s: handle: %d", __func__, *handle);
     }
     return 0;
