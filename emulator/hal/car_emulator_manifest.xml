@@ -1,4 +1,4 @@
-<!-- A copy of the goldfish manifest with the addition of vehicle hal. -->
+<!-- A copy of the goldfish manifest with the addition of car default hals. -->
 <manifest version="1.0" type="device">
     <hal format="hidl">
         <name>android.hardware.drm</name>
@@ -13,15 +13,6 @@
             <name>IDrmFactory</name>
             <instance>default</instance>
             <instance>widevine</instance>
-        </interface>
-    </hal>
-    <hal format="hidl">
-        <name>android.hardware.soundtrigger</name>
-        <transport>hwbinder</transport>
-        <version>2.0</version>
-        <interface>
-            <name>ISoundTriggerHw</name>
-            <instance>default</instance>
         </interface>
     </hal>
     <hal format="hidl">
@@ -67,6 +58,15 @@
         <interface>
             <name>IKeymasterDevice</name>
             <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>android.hardware.keymaster</name>
+        <transport>hwbinder</transport>
+        <version>4.0</version>
+        <interface>
+            <name>IKeymasterDevice</name>
+            <instance>strongbox</instance>
         </interface>
     </hal>
     <hal format="hidl">
@@ -182,20 +182,11 @@
         </interface>
     </hal>
     <hal format="hidl">
-        <name>android.hardware.wifi</name>
+        <name>android.hardware.automotive.audiocontrol</name>
         <transport>hwbinder</transport>
         <version>1.0</version>
         <interface>
-            <name>IWifi</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-    <hal format="hidl">
-        <name>android.hardware.wifi.supplicant</name>
-        <transport>hwbinder</transport>
-        <version>1.0</version>
-        <interface>
-            <name>ISupplicant</name>
+            <name>IAudioControl</name>
             <instance>default</instance>
         </interface>
     </hal>
@@ -208,16 +199,7 @@
             <instance>default</instance>
         </interface>
     </hal>
-    <hal format="hidl">
-        <name>android.hardware.automotive.audiocontrol</name>
-        <transport>hwbinder</transport>
-        <version>1.0</version>
-        <interface>
-            <name>IAudioControl</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
     <sepolicy>
-        <version>27.0</version>
+        <version>10000.0</version>
     </sepolicy>
 </manifest>
