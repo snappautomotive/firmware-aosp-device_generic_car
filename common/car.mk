@@ -45,9 +45,6 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.broadcastradio.xml:system/etc/permissions/android.hardware.broadcastradio.xml \
     device/generic/car/common/manifest.xml:$(TARGET_COPY_OUT_VENDOR)/manifest.xml
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    android.car.hvac.demo=true
-
 TARGET_USES_CAR_FUTURE_FEATURES := true
 
 $(call inherit-product, packages/services/Car/car_product/build/car.mk)
