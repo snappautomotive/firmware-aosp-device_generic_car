@@ -328,6 +328,7 @@ static void out_apply_gain(struct generic_stream_out *out, const void *buffer, s
 
 static ssize_t out_write(struct audio_stream_out *stream, const void *buffer, size_t bytes) {
     struct generic_stream_out *out = (struct generic_stream_out *)stream;
+    ALOGV("%s: to device %s", __func__, out->bus_address);
     const size_t frames =  bytes / audio_stream_out_frame_size(stream);
 
     pthread_mutex_lock(&out->lock);
