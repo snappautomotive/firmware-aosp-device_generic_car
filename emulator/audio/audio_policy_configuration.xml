@@ -62,6 +62,7 @@
                 <item>bus100_rear_seat</item>
                 <item>Built-In Mic</item>
                 <item>Built-In Back Mic</item>
+                <item>Echo-Reference Mic</item>
                 <item>FM Tuner</item>
             </attachedDevices>
             <defaultOutputDevice>bus0_media_out</defaultOutputDevice>
@@ -223,6 +224,11 @@
                             samplingRates="8000,11025,12000,16000,22050,24000,32000,44100,48000"
                             channelMasks="AUDIO_CHANNEL_IN_MONO,AUDIO_CHANNEL_IN_STEREO,AUDIO_CHANNEL_IN_FRONT_BACK"/>
                 </devicePort>
+                <devicePort tagName="Echo-Reference Mic" type="AUDIO_DEVICE_IN_ECHO_REFERENCE" role="source">
+                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                            samplingRates="8000,11025,12000,16000,22050,24000,32000,44100,48000"
+                            channelMasks="AUDIO_CHANNEL_IN_MONO,AUDIO_CHANNEL_IN_STEREO,AUDIO_CHANNEL_IN_FRONT_BACK"/>
+                </devicePort>
                 <devicePort tagName="FM Tuner" type="AUDIO_DEVICE_IN_FM_TUNER" role="source"
                         address="tuner0">
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
@@ -244,7 +250,7 @@
                 <route type="mix" sink="bus6_notification_out" sources="mixport_bus6_notification_out"/>
                 <route type="mix" sink="bus7_system_sound_out" sources="mixport_bus7_system_sound_out"/>
                 <route type="mix" sink="bus100_rear_seat" sources="mixport_bus100_rear_seat"/>
-                <route type="mix" sink="primary input" sources="Built-In Mic,Built-In Back Mic"/>
+                <route type="mix" sink="primary input" sources="Built-In Mic,Built-In Back Mic,Echo-Reference Mic"/>
                 <route type="mix" sink="mixport_tuner0" sources="FM Tuner"/>
             </routes>
 
