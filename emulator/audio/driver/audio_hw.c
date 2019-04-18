@@ -33,6 +33,7 @@
 #include <unistd.h>
 
 #include <log/log.h>
+#include <cutils/properties.h>
 #include <cutils/str_parms.h>
 
 #include <hardware/hardware.h>
@@ -51,6 +52,8 @@
 #define IN_PERIOD_COUNT 4
 
 #define _bool_str(x) ((x)?"true":"false")
+
+#define PROP_KEY_SIMULATE_MULTI_ZONE_AUDIO "ro.aae.simulateMultiZoneAudio"
 
 static int adev_get_mic_mute(const struct audio_hw_device *dev, bool *state);
 
@@ -118,6 +121,7 @@ static int out_dump(const struct audio_stream *stream, int fd) {
                 "\t\tformat: %d\n"
                 "\t\tdevice: %08x\n"
                 "\t\tamplitude ratio: %f\n"
+                "\t\tenabled channels: %d\n"
                 "\t\taudio dev: %p\n\n",
                 out->bus_address,
                 out_get_sample_rate(stream),
@@ -126,6 +130,7 @@ static int out_dump(const struct audio_stream *stream, int fd) {
                 out_get_format(stream),
                 out->device,
                 out->amplitude_ratio,
+                out->enabled_channels,
                 out->dev);
     pthread_mutex_unlock(&out->lock);
     return 0;
@@ -314,15 +319,21 @@ static void get_current_output_position(struct generic_stream_out *out,
     }
 }
 
-// Applies gain naively, assume AUDIO_FORMAT_PCM_16_BIT
+// Applies gain naively, assumes AUDIO_FORMAT_PCM_16_BIT and stereo output
 static void out_apply_gain(struct generic_stream_out *out, const void *buffer, size_t bytes) {
     int16_t *int16_buffer = (int16_t *)buffer;
     size_t int16_size = bytes / sizeof(int16_t);
     for (int i = 0; i < int16_size; i++) {
-         float multiplied = int16_buffer[i] * out->amplitude_ratio;
-         if (multiplied > INT16_MAX) int16_buffer[i] = INT16_MAX;
-         else if (multiplied < INT16_MIN) int16_buffer[i] = INT16_MIN;
-         else int16_buffer[i] = (int16_t)multiplied;
+        if ((i % 2) && !(out->enabled_channels & RIGHT_CHANNEL)) {
+            int16_buffer[i] = 0;
+        } else if (!(i % 2) && !(out->enabled_channels & LEFT_CHANNEL)) {
+            int16_buffer[i] = 0;
+        } else {
+            float multiplied = int16_buffer[i] * out->amplitude_ratio;
+            if (multiplied > INT16_MAX) int16_buffer[i] = INT16_MAX;
+            else if (multiplied < INT16_MIN) int16_buffer[i] = INT16_MIN;
+            else int16_buffer[i] = (int16_t)multiplied;
+        }
     }
 }
 
@@ -526,7 +537,9 @@ static int refine_output_parameters(uint32_t *sample_rate, audio_format_t *forma
 
 static int refine_input_parameters(uint32_t *sample_rate, audio_format_t *format,
         audio_channel_mask_t *channel_mask) {
-    static const uint32_t sample_rates [] = {8000, 11025, 16000, 22050, 44100, 48000};
+    static const uint32_t sample_rates [] = {
+        8000, 11025, 16000, 22050, 44100, 48000
+    };
     static const int sample_rates_count = sizeof(sample_rates)/sizeof(uint32_t);
     bool inval = false;
     // Only PCM_16_bit is supported. If this is changed, stereo to mono drop
@@ -1006,6 +1019,7 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
         pthread_create(&out->worker_thread, NULL, out_write_worker, out);
     }
 
+    out->enabled_channels = BOTH_CHANNELS;
     if (address) {
         out->bus_address = calloc(strlen(address) + 1, sizeof(char));
         strncpy(out->bus_address, address, strlen(address));
@@ -1017,6 +1031,10 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
             .step_value = 100,
         };
         out->amplitude_ratio = 1.0;
+        if (property_get_bool(PROP_KEY_SIMULATE_MULTI_ZONE_AUDIO, false)) {
+            out->enabled_channels = strstr(out->bus_address, "rear")
+                ? RIGHT_CHANNEL: LEFT_CHANNEL;
+        }
     }
     *stream_out = &out->stream;
     ALOGD("%s bus:%s", __func__, out->bus_address);
