@@ -59,9 +59,13 @@
                     </device>
                 </group>
             </volumeGroups>
-            <displays>
-                <display display="primary_display"/>
-            </displays>
+            <!-- to specify displays associated with this audio zone, use the following tags
+                <displays>
+                    <display port="1"/>
+                    <display port="2"/>
+                </displays>
+                where port is the physical port of the display (See DisplayAddress.Phyisical)
+            -->
         </zone>
         <zone name="rear seat zone">
             <volumeGroups>
@@ -78,9 +82,6 @@
                     </device>
                 </group>
             </volumeGroups>
-            <displays>
-                <display display="rear_seat_display"/>
-            </displays>
         </zone>
     </zones>
 </carAudioConfiguration>
