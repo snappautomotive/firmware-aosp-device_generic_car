@@ -59,6 +59,9 @@
                     </device>
                 </group>
             </volumeGroups>
+            <displays>
+                <display port="0"/>
+            </displays>
             <!-- to specify displays associated with this audio zone, use the following tags
                 <displays>
                     <display port="1"/>
@@ -82,6 +85,9 @@
                     </device>
                 </group>
             </volumeGroups>
+            <displays>
+                <display port="1"/>
+            </displays>
         </zone>
     </zones>
 </carAudioConfiguration>
