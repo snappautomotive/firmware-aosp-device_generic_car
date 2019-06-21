@@ -33,6 +33,8 @@ struct generic_audio_device {
   bool mic_mute;                // Protected by this->lock
   struct mixer *mixer;          // Protected by this->lock
   Hashmap *out_bus_stream_map;  // Extended field. Constant after init
+  // Play on Speaker zone selection
+  int last_zone_selected_to_play; // Protected by this->lock
 };
 
 enum output_channel_enable {
