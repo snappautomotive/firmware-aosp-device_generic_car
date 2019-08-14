@@ -64,4 +64,8 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/generic/car/common/manifest.xml:$(TARGET_COPY_OUT_VENDOR)/manifest.xml
 
+# Car emulator specific sepolicy
+BOARD_SEPOLICY_DIRS += \
+    device/generic/car/common/sepolicy
+
 $(call inherit-product, packages/services/Car/car_product/build/car.mk)

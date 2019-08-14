@@ -16,7 +16,6 @@
 
 <!-- This is a copy of frameworks/native/data/etc/car_core_hardware.xml that is somewhat
      combined with device/generic/goldfish/data/etc/handheld_core_hardware.xml.
-     Notably bluetooth is removed since it does not work in the emulator.
 -->
 
 <!-- These are the hardware components that all handheld devices
@@ -37,6 +36,9 @@
     <feature name="android.hardware.location.network" />
     <feature name="android.hardware.touchscreen" />
     <feature name="android.hardware.microphone" />
+
+     <!-- Notably bluetooth is added to avoid crashing. It does not work in the emulator. -->
+    <feature name="android.hardware.bluetooth" />
 
     <!-- basic system services -->
     <feature name="android.software.connectionservice" />
