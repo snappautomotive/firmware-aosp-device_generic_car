@@ -38,6 +38,9 @@
     <feature name="android.hardware.microphone" />
     <feature name="android.hardware.bluetooth" />
 
+     <!-- Notably bluetooth is added to avoid crashing. It does not work in the emulator. -->
+    <feature name="android.hardware.bluetooth" />
+
     <!-- basic system services -->
     <feature name="android.software.connectionservice" />
     <feature name="android.software.voice_recognizers" notLowRam="true" />

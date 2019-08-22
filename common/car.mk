@@ -66,4 +66,8 @@ DEVICE_MANIFEST_FILE := device/generic/car/common/manifest.xml
 BOARD_SEPOLICY_DIRS += \
     device/generic/car/common/sepolicy
 
+# Car emulator specific sepolicy
+BOARD_SEPOLICY_DIRS += \
+    device/generic/car/common/sepolicy
+
 $(call inherit-product, packages/services/Car/car_product/build/car.mk)
