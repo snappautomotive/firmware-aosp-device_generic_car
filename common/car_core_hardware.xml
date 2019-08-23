@@ -36,7 +36,6 @@
     <feature name="android.hardware.location.network" />
     <feature name="android.hardware.touchscreen" />
     <feature name="android.hardware.microphone" />
-    <feature name="android.hardware.bluetooth" />
 
      <!-- Notably bluetooth is added to avoid crashing. It does not work in the emulator. -->
     <feature name="android.hardware.bluetooth" />
