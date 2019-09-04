@@ -35,6 +35,12 @@ struct generic_audio_device {
   Hashmap *out_bus_stream_map;  // Extended field. Constant after init
 };
 
+enum output_channel_enable {
+  LEFT_CHANNEL = 1,
+  RIGHT_CHANNEL = 1 << 1,
+  BOTH_CHANNELS = LEFT_CHANNEL | RIGHT_CHANNEL
+};
+
 struct generic_stream_out {
   struct audio_stream_out stream;  // Constant after init
   pthread_mutex_t lock;
@@ -46,6 +52,7 @@ struct generic_stream_out {
   const char *bus_address;           // Extended field. Constant after init
   struct audio_gain gain_stage;      // Constant after init
   float amplitude_ratio;             // Protected by this->lock
+  enum output_channel_enable enabled_channels;  // Constant after init
 
   // Time & Position Keeping
   bool standby;                    // Protected by this->lock
