@@ -53,7 +53,20 @@
 
 #define _bool_str(x) ((x)?"true":"false")
 
-#define PROP_KEY_SIMULATE_MULTI_ZONE_AUDIO "ro.aae.simulateMultiZoneAudio"
+static const char * const PROP_KEY_SIMULATE_MULTI_ZONE_AUDIO = "ro.aae.simulateMultiZoneAudio";
+static const char * const AAE_PARAMETER_KEY_FOR_SELECTED_ZONE = "com.android.car.emulator.selected_zone";
+// Lapse time between checking audio id changes
+#define DEFAULT_PLAYZONE_ID_ELAPSE_TIME_MS 300.0f
+#define MILLISECONDS_TO_MICROSECONDS 1000.0f
+#define SECONDS_TO_MILLISECONDS 1000.0f
+#define PRIMARY_ZONE_ID 0
+#define INVALID_ZONE_ID -1
+// Note the primary zone goes to left speaker so route other zone to right speaker
+#define DEFAULT_ZONE_TO_LEFT_SPEAKER (PRIMARY_ZONE_ID + 1)
+
+static const char * const REAR_SEAT_KEYWORD = "_rear_seat_";
+
+#define SIZE_OF_PARSE_BUFFER 32
 
 static int adev_get_mic_mute(const struct audio_hw_device *dev, bool *state);
 
@@ -66,6 +79,22 @@ static struct pcm_config pcm_config_out = {
     .start_threshold = 0,
 };
 
+static int get_int_value(const struct str_parms *str_parms, const char *key, int *return_value) {
+    char value[SIZE_OF_PARSE_BUFFER];
+    int results = str_parms_get_str(str_parms, key, value, SIZE_OF_PARSE_BUFFER);
+    if (results >= 0) {
+        char *end = NULL;
+        errno = 0;
+        long val = strtol(value, &end, 10);
+        if ((errno == 0) && (end != NULL) && (*end == '\0') && ((int) val == val)) {
+            *return_value = val;
+        } else {
+            results = -EINVAL;
+        }
+    }
+    return results;
+}
+
 static struct pcm_config pcm_config_in = {
     .channels = 2,
     .rate = 0,
@@ -76,8 +105,25 @@ static struct pcm_config pcm_config_in = {
     .stop_threshold = INT_MAX,
 };
 
+float time_difference_msec(struct timeval t0, struct timeval t1) {
+    return (t1.tv_sec - t0.tv_sec) * SECONDS_TO_MILLISECONDS +
+        (t1.tv_usec - t0.tv_usec) / MILLISECONDS_TO_MICROSECONDS;
+}
+
 static pthread_mutex_t adev_init_lock = PTHREAD_MUTEX_INITIALIZER;
 static unsigned int audio_device_ref_count = 0;
+
+static bool is_zone_selected_to_play(struct audio_hw_device *dev, int zone_id) {
+    // play if current zone is enable or zone equal to primary zone
+    bool is_selected_zone = true;
+    if (zone_id != PRIMARY_ZONE_ID) {
+        struct generic_audio_device *adev = (struct generic_audio_device *)dev;
+        pthread_mutex_lock(&adev->lock);
+        is_selected_zone = adev->last_zone_selected_to_play == zone_id;
+        pthread_mutex_unlock(&adev->lock);
+    }
+    return is_selected_zone;
+}
 
 static uint32_t out_get_sample_rate(const struct audio_stream *stream) {
     struct generic_stream_out *out = (struct generic_stream_out *)stream;
@@ -139,10 +185,7 @@ static int out_dump(const struct audio_stream *stream, int fd) {
 static int out_set_parameters(struct audio_stream *stream, const char *kvpairs) {
     struct generic_stream_out *out = (struct generic_stream_out *)stream;
     struct str_parms *parms;
-    char value[32];
-    int ret;
-    long val;
-    char *end;
+    int ret = 0;
 
     pthread_mutex_lock(&out->lock);
     if (!out->standby) {
@@ -150,17 +193,11 @@ static int out_set_parameters(struct audio_stream *stream, const char *kvpairs) 
         ret = -ENOSYS;
     } else {
         parms = str_parms_create_str(kvpairs);
-        ret = str_parms_get_str(parms, AUDIO_PARAMETER_STREAM_ROUTING,
-                                value, sizeof(value));
+        int val = 0;
+        ret = get_int_value(parms, AUDIO_PARAMETER_STREAM_ROUTING, &val);
         if (ret >= 0) {
-            errno = 0;
-            val = strtol(value, &end, 10);
-            if (errno == 0 && (end != NULL) && (*end == '\0') && ((int)val == val)) {
-                out->device = (int)val;
-                ret = 0;
-            } else {
-                ret = -EINVAL;
-            }
+            out->device = (int)val;
+            ret = 0;
         }
         str_parms_destroy(parms);
     }
@@ -201,6 +238,19 @@ static int out_set_volume(struct audio_stream_out *stream,
     return -ENOSYS;
 }
 
+static int get_rear_zone_id_from_name(const char *name) {
+    int zone_id = INVALID_ZONE_ID;
+    char *rear_start = strstr(name, REAR_SEAT_KEYWORD);
+    if (rear_start) {
+        char *end = NULL;
+        zone_id = strtol(rear_start + strlen(REAR_SEAT_KEYWORD), &end, 10);
+        if (end == NULL || zone_id < 0) {
+            return INVALID_ZONE_ID;
+        }
+    }
+    return zone_id;
+}
+
 static void *out_write_worker(void *args) {
     struct generic_stream_out *out = (struct generic_stream_out *)args;
     struct ext_pcm *ext_pcm = NULL;
@@ -209,6 +259,18 @@ static void *out_write_worker(void *args) {
     int buffer_size;
     bool restart = false;
     bool shutdown = false;
+    int zone_id = PRIMARY_ZONE_ID;
+    // If it is a rear seat bus address then get zone id
+    if (strstr(out->bus_address, REAR_SEAT_KEYWORD)) {
+        zone_id = get_rear_zone_id_from_name(out->bus_address);
+        if (zone_id == INVALID_ZONE_ID) {
+            ALOGE("%s Found invalid zone id, defaulting device %s to zone %d", __func__,
+                out->bus_address, DEFAULT_ZONE_TO_LEFT_SPEAKER);
+            zone_id = DEFAULT_ZONE_TO_LEFT_SPEAKER;
+        }
+    }
+    ALOGD("Out worker:%s zone id %d", out->bus_address, zone_id);
+
     while (true) {
         pthread_mutex_lock(&out->lock);
         while (out->worker_standby || restart) {
@@ -265,13 +327,17 @@ static void *out_write_worker(void *args) {
         }
         int frames = audio_vbuffer_read(&out->buffer, buffer, buffer_frames);
         pthread_mutex_unlock(&out->lock);
-        int write_error = ext_pcm_write(ext_pcm, out->bus_address,
+
+        if (is_zone_selected_to_play(out->dev, zone_id)) {
+            int write_error = ext_pcm_write(ext_pcm, out->bus_address,
                 buffer, ext_pcm_frames_to_bytes(ext_pcm, frames));
-        if (write_error) {
-            ALOGE("pcm_write failed %s address %s", ext_pcm_get_error(ext_pcm), out->bus_address);
-            restart = true;
-        } else {
-            ALOGV("pcm_write succeed address %s", out->bus_address);
+            if (write_error) {
+                ALOGE("pcm_write failed %s address %s",
+                    ext_pcm_get_error(ext_pcm), out->bus_address);
+                restart = true;
+            } else {
+                ALOGV("pcm_write succeed address %s", out->bus_address);
+            }
         }
     }
     if (buffer) {
@@ -402,8 +468,8 @@ static ssize_t out_write(struct audio_stream_out *stream, const void *buffer, si
     }
 
     if (frames_written < frames) {
-        ALOGW("Hardware backing HAL too slow, could only write %zu of %zu frames",
-                frames_written, frames);
+        ALOGW("%s Hardware backing HAL too slow, could only write %zu of %zu frames",
+            __func__, frames_written, frames);
     }
 
     /* Always consume all bytes */
@@ -641,28 +707,18 @@ static int in_dump(const struct audio_stream *stream, int fd) {
 static int in_set_parameters(struct audio_stream *stream, const char *kvpairs) {
     struct generic_stream_in *in = (struct generic_stream_in *)stream;
     struct str_parms *parms;
-    char value[32];
-    int ret;
-    long val;
-    char *end;
+    int ret = 0;
 
     pthread_mutex_lock(&in->lock);
     if (!in->standby) {
         ret = -ENOSYS;
     } else {
         parms = str_parms_create_str(kvpairs);
-
-        ret = str_parms_get_str(parms, AUDIO_PARAMETER_STREAM_ROUTING,
-                                value, sizeof(value));
+        int val = 0;
+        ret = get_int_value(parms, AUDIO_PARAMETER_STREAM_ROUTING, &val);
         if (ret >= 0) {
-            errno = 0;
-            val = strtol(value, &end, 10);
-            if ((errno == 0) && (end != NULL) && (*end == '\0') && ((int)val == val)) {
-                in->device = (int)val;
-                ret = 0;
-            } else {
-                ret = -EINVAL;
-            }
+            in->device = (int)val;
+            ret = 0;
         }
 
         str_parms_destroy(parms);
@@ -1034,10 +1090,12 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
         if (property_get_bool(PROP_KEY_SIMULATE_MULTI_ZONE_AUDIO, false)) {
             out->enabled_channels = strstr(out->bus_address, "rear")
                 ? RIGHT_CHANNEL: LEFT_CHANNEL;
+            ALOGD("%s Routing %s to %s channel", __func__,
+             out->bus_address, out->enabled_channels == RIGHT_CHANNEL ? "Right" : "Left");
         }
     }
     *stream_out = &out->stream;
-    ALOGD("%s bus:%s", __func__, out->bus_address);
+    ALOGD("%s bus: %s", __func__, out->bus_address);
 
 error:
     return ret;
@@ -1067,7 +1125,19 @@ static void adev_close_output_stream(struct audio_hw_device *dev,
 }
 
 static int adev_set_parameters(struct audio_hw_device *dev, const char *kvpairs) {
-    return 0;
+    struct generic_audio_device *adev = (struct generic_audio_device *)dev;
+    pthread_mutex_lock(&adev->lock);
+    struct str_parms *parms = str_parms_create_str(kvpairs);
+    int value = 0;
+    int results = get_int_value(parms, AAE_PARAMETER_KEY_FOR_SELECTED_ZONE, &value);
+    if (results >= 0) {
+        adev->last_zone_selected_to_play = value;
+        results = 0;
+        ALOGD("%s Changed play zone id to %d", __func__, adev->last_zone_selected_to_play);
+    }
+    str_parms_destroy(parms);
+    pthread_mutex_unlock(&adev->lock);
+    return results;
 }
 
 static char *adev_get_parameters(const struct audio_hw_device *dev, const char *keys) {
@@ -1404,6 +1474,8 @@ static int adev_open(const hw_module_t *module,
     *device = &adev->device.common;
 
     adev->mixer = mixer_open(PCM_CARD);
+
+    ALOGD("%s Mixer name %s", __func__, mixer_get_name(adev->mixer));
     struct mixer_ctl *ctl;
 
     // Set default mixer ctls
@@ -1431,6 +1503,8 @@ static int adev_open(const hw_module_t *module,
 
     // Initialize the bus address to output stream map
     adev->out_bus_stream_map = hashmapCreate(5, str_hash_fn, str_eq);
+
+    adev->last_zone_selected_to_play = DEFAULT_ZONE_TO_LEFT_SPEAKER;
 
     audio_device_ref_count++;
 
