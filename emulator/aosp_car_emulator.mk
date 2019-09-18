@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016 The Android Open Source Project
+# Copyright (C) 2019 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$(call inherit-product, device/generic/car/emulator/aosp_car_emulator.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_arm.mk)
+$(call inherit-product, device/generic/car/common/car.mk)
+# This overrides device/generic/car/common/car.mk
+$(call inherit-product, device/generic/car/emulator/audio/car_emulator_audio.mk)
+$(call inherit-product, device/generic/car/emulator/hal/car_emulator_hal.mk)
 
-PRODUCT_NAME := aosp_car_arm
-PRODUCT_DEVICE := generic
-PRODUCT_BRAND := Android
-PRODUCT_MODEL := Car on ARM emulator
