@@ -62,6 +62,10 @@ PRODUCT_COPY_FILES += \
 
 DEVICE_MANIFEST_FILE := device/generic/car/common/manifest.xml
 
+# Whitelisted packages per user type
+PRODUCT_COPY_FILES += \
+  device/generic/car/common/preinstalled-packages-product-car-emulator.xml:product/etc/sysconfig/preinstalled-packages-product-car-emulator.xml
+
 # Car emulator specific sepolicy
 BOARD_SEPOLICY_DIRS += \
     device/generic/car/common/sepolicy
