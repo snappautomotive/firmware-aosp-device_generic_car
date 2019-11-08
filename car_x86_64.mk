@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017 The Android Open-Source Project
+# Copyright (C) 2017 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,18 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/aosp_car_arm64.mk \
-    $(LOCAL_DIR)/aosp_car_arm.mk \
-    $(LOCAL_DIR)/aosp_car_x86.mk \
-    $(LOCAL_DIR)/aosp_car_x86_64.mk \
-    $(LOCAL_DIR)/car_x86_64.mk \
+$(call inherit-product, device/generic/car/common/car.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_x86_64.mk)
 
-COMMON_LUNCH_CHOICES := \
-    aosp_car_arm-userdebug \
-    aosp_car_arm64-userdebug \
-    aosp_car_x86-userdebug \
-    aosp_car_x86_64-userdebug \
-    car_x86_64-userdebug \
+DEVICE_PACKAGE_OVERLAYS += device/generic/car/car_x86_64/overlay
+
+PRODUCT_NAME := car_x86_64
+PRODUCT_DEVICE := generic_x86_64
+PRODUCT_BRAND := Google
+PRODUCT_MODEL := Car on x86_64 emulator
