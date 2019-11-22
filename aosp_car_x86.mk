@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+PRODUCT_PACKAGE_OVERLAYS := device/generic/car/common/overlay
+
 $(call inherit-product, device/generic/car/common/car.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_x86.mk)
 
