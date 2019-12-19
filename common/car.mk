@@ -32,9 +32,14 @@ PRODUCT_COPY_FILES += \
     packages/services/Car/car_product/init/init.car.rc:root/init.car.rc
 
 # Copy car_core_hardware and overwrite handheld_core_hardware.xml with a dummy config.
+# Overwrite goldfish related xml with a dummy config.
 PRODUCT_COPY_FILES += \
     device/generic/car/common/android.hardware.dummy.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/handheld_core_hardware.xml \
-    device/generic/car/common/car_core_hardware.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/car_core_hardware.xml
+    device/generic/car/common/car_core_hardware.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/car_core_hardware.xml \
+    device/generic/car/common/android.hardware.dummy.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.ar.xml \
+    device/generic/car/common/android.hardware.dummy.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.autofocus.xml \
+    device/generic/car/common/android.hardware.dummy.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.full.xml \
+    device/generic/car/common/android.hardware.dummy.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.fingerprint.xml \
 
 # Enable landscape
 PRODUCT_COPY_FILES += \
@@ -60,6 +65,7 @@ PRODUCT_COPY_FILES += \
     device/generic/goldfish/data/etc/apns-conf.xml:system/etc/apns-conf.xml \
     device/sample/etc/old-apns-conf.xml:system/etc/old-apns-conf.xml
 
+# Vendor Interface Manifest
 DEVICE_MANIFEST_FILE := device/generic/car/common/manifest.xml
 
 # Whitelisted packages per user type
