@@ -15,6 +15,17 @@
 
 $(call inherit-product, device/generic/car/common/car.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_x86_64.mk)
+$(call inherit-product, device/generic/car/emulator/audio/car_emulator_audio.mk)
+
+PRODUCT_SDK_ADDON_NAME := car_emu_x86_64
+
+# Extra files needed by the addon.
+PRODUCT_SDK_ADDON_COPY_FILES := \
+    device/generic/goldfish/data/etc/encryptionkey.img:images/${TARGET_CPU_ABI}/encryptionkey.img\
+    device/generic/car/car_x86_64/manifest.ini:manifest.ini
+
+PRODUCT_SDK_ADDON_COPY_MODULES := \
+    com.android.future.usb.accessory:libs/usb.jar
 
 DEVICE_PACKAGE_OVERLAYS += device/generic/car/car_x86_64/overlay
 
@@ -22,3 +33,7 @@ PRODUCT_NAME := car_x86_64
 PRODUCT_DEVICE := generic_x86_64
 PRODUCT_BRAND := Google
 PRODUCT_MODEL := Car on x86_64 emulator
+PRODUCT_SDK_ADDON_NAME := car_x86_64
+
+PRODUCT_SDK_ADDON_SYS_IMG_SOURCE_PROP := \
+    device/generic/car/car_x86_64/source.properties
