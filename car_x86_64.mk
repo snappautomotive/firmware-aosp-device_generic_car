@@ -15,8 +15,8 @@
 
 PRODUCT_PACKAGE_OVERLAYS := device/generic/car/common/overlay
 
-$(call inherit-product, device/generic/car/emulator/aosp_car_emulator.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_x86_64.mk)
+$(call inherit-product, device/generic/car/emulator/aosp_car_emulator.mk)
 $(call inherit-product, device/generic/car/emulator/audio/car_emulator_audio.mk)
 
 PRODUCT_SDK_ADDON_NAME := car_emu_x86_64
