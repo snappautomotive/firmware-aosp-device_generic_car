@@ -65,9 +65,7 @@ PRODUCT_COPY_FILES += \
     device/generic/goldfish/data/etc/apns-conf.xml:system/etc/apns-conf.xml \
     device/sample/etc/old-apns-conf.xml:system/etc/old-apns-conf.xml
 
-# Vendor Interface Manifest
-PRODUCT_COPY_FILES += \
-    device/generic/car/common/manifest.xml:$(TARGET_COPY_OUT_VENDOR)/manifest.xml
+DEVICE_MANIFEST_FILE := device/generic/car/common/manifest.xml
 
 # Car emulator specific sepolicy
 BOARD_SEPOLICY_DIRS += \
