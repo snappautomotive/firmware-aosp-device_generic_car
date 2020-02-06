@@ -1,0 +1,2 @@
+bt.rootcanal_mac_address  u:object_r:hal_bluetooth_sim_prop:s0
+bt.rootcanal_test_console  u:object_r:hal_bluetooth_sim_prop:s0
