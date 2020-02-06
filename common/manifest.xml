@@ -20,7 +20,7 @@
     <hal format="hidl">
         <name>android.hardware.audio.effect</name>
         <transport>hwbinder</transport>
-        <version>4.0</version>
+        <version>5.0</version>
         <interface>
             <name>IEffectsFactory</name>
             <instance>default</instance>
@@ -47,7 +47,7 @@
     <hal format="hidl">
         <name>android.hardware.bluetooth</name>
         <transport>hwbinder</transport>
-        <version>1.0</version>
+        <version>1.1</version>
         <interface>
             <name>IBluetoothHci</name>
             <instance>default</instance>
@@ -65,7 +65,7 @@
     <hal format="hidl">
         <name>android.hardware.audio</name>
         <transport>hwbinder</transport>
-        <version>4.0</version>
+        <version>5.0</version>
         <interface>
             <name>IDevicesFactory</name>
             <instance>default</instance>
@@ -120,11 +120,10 @@
     <hal format="hidl">
         <name>android.hardware.broadcastradio</name>
         <transport>hwbinder</transport>
-        <version>2.0</version>
+        <version>1.1</version>
         <interface>
-            <name>IBroadcastRadio</name>
-            <instance>amfm</instance>
-            <instance>dab</instance>
+            <name>IBroadcastRadioFactory</name>
+            <instance>default</instance>
         </interface>
     </hal>
     <hal format="hidl">
@@ -134,6 +133,7 @@
         <interface>
             <name>ICameraProvider</name>
             <instance>legacy/0</instance>
+            <instance>internal/0</instance>
         </interface>
     </hal>
     <hal format="hidl">
@@ -241,4 +241,14 @@
             <instance>default</instance>
         </interface>
     </hal>
+        <hal format="hidl">
+        <name>android.hardware.authsecret</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IAuthSecret</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+
 </manifest>
