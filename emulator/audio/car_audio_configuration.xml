@@ -22,9 +22,9 @@
     - Volume groups
   in the car environment.
 -->
-<carAudioConfiguration version="1">
+<carAudioConfiguration version="2">
     <zones>
-        <zone name="primary zone" isPrimary="true">
+        <zone name="primary zone" isPrimary="true" occupantZoneId="0">
             <volumeGroups>
                 <group>
                     <device address="bus0_media_out">
@@ -38,6 +38,10 @@
                     </device>
                     <device address="bus7_system_sound_out">
                         <context context="system_sound"/>
+                        <context context="emergency"/>
+                        <context context="safety"/>
+                        <context context="vehicle_status"/>
+                        <context context="announcement"/>
                     </device>
                 </group>
                 <group>
@@ -70,7 +74,7 @@
                 where port is the physical port of the display (See DisplayAddress.Phyisical)
             -->
         </zone>
-        <zone name="rear seat zone 1">
+        <zone name="rear seat zone 1" audioZoneId="1">
             <volumeGroups>
                 <group>
                     <device address="bus100_left_rear_seat_1">
@@ -82,6 +86,10 @@
                         <context context="alarm"/>
                         <context context="notification"/>
                         <context context="system_sound"/>
+                        <context context="emergency"/>
+                        <context context="safety"/>
+                        <context context="vehicle_status"/>
+                        <context context="announcement"/>
                     </device>
                 </group>
             </volumeGroups>
@@ -89,7 +97,7 @@
                 <display port="1"/>
             </displays>
         </zone>
-        <zone name="rear seat zone 2">
+        <zone name="rear seat zone 2"  audioZoneId="2">
             <volumeGroups>
                 <group>
                     <device address="bus200_right_rear_seat_2">
@@ -101,6 +109,10 @@
                         <context context="alarm"/>
                         <context context="notification"/>
                         <context context="system_sound"/>
+                        <context context="emergency"/>
+                        <context context="safety"/>
+                        <context context="vehicle_status"/>
+                        <context context="announcement"/>
                     </device>
                 </group>
             </volumeGroups>
