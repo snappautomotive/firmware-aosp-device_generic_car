@@ -64,7 +64,7 @@ static const char * const AAE_PARAMETER_KEY_FOR_SELECTED_ZONE = "com.android.car
 // Note the primary zone goes to left speaker so route other zone to right speaker
 #define DEFAULT_ZONE_TO_LEFT_SPEAKER (PRIMARY_ZONE_ID + 1)
 
-static const char * const REAR_SEAT_KEYWORD = "_rear_seat_";
+static const char * const AUDIO_ZONE_KEYWORD = "_audio_zone_";
 
 #define SIZE_OF_PARSE_BUFFER 32
 
@@ -238,12 +238,12 @@ static int out_set_volume(struct audio_stream_out *stream,
     return -ENOSYS;
 }
 
-static int get_rear_zone_id_from_name(const char *name) {
+static int get_zone_id_from_address(const char *address) {
     int zone_id = INVALID_ZONE_ID;
-    char *rear_start = strstr(name, REAR_SEAT_KEYWORD);
-    if (rear_start) {
+    char *zone_start = strstr(address, AUDIO_ZONE_KEYWORD);
+    if (zone_start) {
         char *end = NULL;
-        zone_id = strtol(rear_start + strlen(REAR_SEAT_KEYWORD), &end, 10);
+        zone_id = strtol(zone_start + strlen(AUDIO_ZONE_KEYWORD), &end, 10);
         if (end == NULL || zone_id < 0) {
             return INVALID_ZONE_ID;
         }
@@ -260,9 +260,9 @@ static void *out_write_worker(void *args) {
     bool restart = false;
     bool shutdown = false;
     int zone_id = PRIMARY_ZONE_ID;
-    // If it is a rear seat bus address then get zone id
-    if (strstr(out->bus_address, REAR_SEAT_KEYWORD)) {
-        zone_id = get_rear_zone_id_from_name(out->bus_address);
+    // If it is a audio zone keyword bus address then get zone id
+    if (strstr(out->bus_address, AUDIO_ZONE_KEYWORD)) {
+        zone_id = get_zone_id_from_address(out->bus_address);
         if (zone_id == INVALID_ZONE_ID) {
             ALOGE("%s Found invalid zone id, defaulting device %s to zone %d", __func__,
                 out->bus_address, DEFAULT_ZONE_TO_LEFT_SPEAKER);
@@ -1088,7 +1088,7 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
         };
         out->amplitude_ratio = 1.0;
         if (property_get_bool(PROP_KEY_SIMULATE_MULTI_ZONE_AUDIO, false)) {
-            out->enabled_channels = strstr(out->bus_address, "rear")
+            out->enabled_channels = strstr(out->bus_address, AUDIO_ZONE_KEYWORD)
                 ? RIGHT_CHANNEL: LEFT_CHANNEL;
             ALOGD("%s Routing %s to %s channel", __func__,
              out->bus_address, out->enabled_channels == RIGHT_CHANNEL ? "Right" : "Left");
