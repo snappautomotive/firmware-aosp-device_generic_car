@@ -19,8 +19,6 @@
 PRODUCT_PACKAGES += \
     android.hardware.automotive.vehicle@2.0-service \
     android.hardware.automotive.audiocontrol@2.0-service \
-    android.hardware.bluetooth@1.1-service.sim \
-    android.hardware.bluetooth.audio@2.0-impl \
 
 # Emulator configuration
 PRODUCT_COPY_FILES += \
