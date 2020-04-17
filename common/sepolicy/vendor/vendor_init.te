@@ -1,8 +1,0 @@
-allow vendor_init {
-  audio_device
-  input_events_device
-  libcuttlefish_rild_device
-  region_screen_device
-}:chr_file { getattr };
-
-set_prop(vendor_init, hal_bluetooth_sim_prop)

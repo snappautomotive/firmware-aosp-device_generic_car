@@ -20,6 +20,9 @@ PRODUCT_PACKAGES += \
     android.hardware.automotive.vehicle@2.0-service \
     android.hardware.automotive.audiocontrol@2.0-service \
 
+# vehicle Interface Manifest
+DEVICE_MANIFEST_FILE += hardware/interfaces/automotive/vehicle/2.0/manifest.vehicle.xml
+
 # Emulator configuration
 PRODUCT_COPY_FILES += \
     device/generic/car/common/config.ini:config.ini
@@ -63,16 +66,9 @@ PRODUCT_COPY_FILES += \
     device/generic/goldfish/data/etc/apns-conf.xml:system/etc/apns-conf.xml \
     device/sample/etc/old-apns-conf.xml:system/etc/old-apns-conf.xml
 
-# Vendor Interface Manifest
-DEVICE_MANIFEST_FILE := device/generic/car/common/manifest.xml
-
 # Whitelisted packages per user type
 PRODUCT_COPY_FILES += \
   device/generic/car/common/preinstalled-packages-product-car-emulator.xml:product/etc/sysconfig/preinstalled-packages-product-car-emulator.xml
-
-# Car emulator specific sepolicy
-BOARD_SEPOLICY_DIRS += \
-    device/generic/car/common/sepolicy
 
 # Number of pre-created users
 PRODUCT_SYSTEM_DEFAULT_PROPERTIES := \
