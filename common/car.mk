@@ -20,9 +20,6 @@ PRODUCT_PACKAGES += \
     android.hardware.automotive.vehicle@2.0-service \
     android.hardware.automotive.audiocontrol@2.0-service \
 
-# vehicle Interface Manifest
-DEVICE_MANIFEST_FILE += hardware/interfaces/automotive/vehicle/2.0/manifest.vehicle.xml
-
 # Emulator configuration
 PRODUCT_COPY_FILES += \
     device/generic/car/common/config.ini:config.ini
