@@ -65,7 +65,7 @@ PRODUCT_COPY_FILES += \
 
 # Whitelisted packages per user type
 PRODUCT_COPY_FILES += \
-  device/generic/car/common/preinstalled-packages-product-car-emulator.xml:product/etc/sysconfig/preinstalled-packages-product-car-emulator.xml
+  device/generic/car/common/preinstalled-packages-product-car-emulator.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/sysconfig/preinstalled-packages-product-car-emulator.xml
 
 # Number of pre-created users
 PRODUCT_SYSTEM_DEFAULT_PROPERTIES := \
