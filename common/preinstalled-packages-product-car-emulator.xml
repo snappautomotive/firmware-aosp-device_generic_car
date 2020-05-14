@@ -74,6 +74,10 @@
         <install-in user-type="FULL" />
         <install-in user-type="SYSTEM" />
     </install-in-user-type>
+    <install-in-user-type package="com.android.car.auto_generated_rro_vendor__">
+        <install-in user-type="FULL" />
+        <install-in user-type="SYSTEM" />
+    </install-in-user-type>
 
     <!-- Required for Wifi -->
     <install-in-user-type package="com.android.networkstack">
