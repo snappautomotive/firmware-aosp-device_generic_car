@@ -165,13 +165,22 @@
     <install-in-user-type package="com.android.theme.font.notoserifsource">
         <install-in user-type="FULL" />
     </install-in-user-type>
+    <install-in-user-type package="com.android.theme.icon.pebble">
+        <install-in user-type="FULL" />
+    </install-in-user-type>
     <install-in-user-type package="com.android.theme.icon.roundedrect">
         <install-in user-type="FULL" />
     </install-in-user-type>
     <install-in-user-type package="com.android.theme.icon.squircle">
         <install-in user-type="FULL" />
     </install-in-user-type>
+    <install-in-user-type package="com.android.theme.icon.taperedrect">
+        <install-in user-type="FULL" />
+    </install-in-user-type>
     <install-in-user-type package="com.android.theme.icon.teardrop">
+        <install-in user-type="FULL" />
+    </install-in-user-type>
+    <install-in-user-type package="com.android.theme.icon.vessel">
         <install-in user-type="FULL" />
     </install-in-user-type>
     <install-in-user-type package="com.android.theme.icon_pack.circular.android">
@@ -224,6 +233,12 @@
     </install-in-user-type>
     <install-in-user-type package="com.android.car.retaildemo">
         <install-in user-type="FULL" />
+    </install-in-user-type>
+    <install-in-user-type package="com.android.car.voicecontrol">
+        <install-in user-type="FULL" />
+    </install-in-user-type>
+        <install-in-user-type package="com.android.car.voicecontrol.auto_generated_rro_product__">
+    <install-in user-type="FULL" />
     </install-in-user-type>
     <install-in-user-type package="com.android.documentsui">
         <install-in user-type="FULL" />
@@ -316,6 +331,23 @@
         <install-in user-type="FULL" />
     </install-in-user-type>
     <install-in-user-type package="com.android.car.carlauncher.auto_generated_rro_product__">
+        <install-in user-type="FULL" />
+    </install-in-user-type>
+
+<!--
+  Apps installed on multi-display emulator
+  TODO: move to a MD-only XML file under vendor/auto/embedded/products
+-->
+    <install-in-user-type package="com.android.car.secondaryhome">
+        <install-in user-type="FULL" />
+    </install-in-user-type>
+    <install-in-user-type package="com.android.car.multidisplay">
+        <install-in user-type="FULL" />
+    </install-in-user-type>
+    <install-in-user-type package="com.google.android.car.multidisplaytest">
+        <install-in user-type="FULL" />
+    </install-in-user-type>
+    <install-in-user-type package="com.example.android.multiclientinputmethod">
         <install-in user-type="FULL" />
     </install-in-user-type>
 </config>
