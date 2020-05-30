@@ -16,3 +16,9 @@
 $(call inherit-product, device/generic/car/common/car.mk)
 # This overrides device/generic/car/common/car.mk
 $(call inherit-product, device/generic/car/emulator/audio/car_emulator_audio.mk)
+
+ifeq (true,$(BUILD_EMULATOR_CLUSTER_DISPLAY))
+PRODUCT_PRODUCT_PROPERTIES += \
+    hwservicemanager.external.displays=1,1080,600,120,0 \
+    persist.service.bootanim.displays=8140900251843329
+endif
