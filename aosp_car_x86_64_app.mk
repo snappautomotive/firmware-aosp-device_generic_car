@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2017 The Android Open-Source Project
+# Copyright (C) 2020 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,22 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/aosp_car_arm64.mk \
-    $(LOCAL_DIR)/aosp_car_arm.mk \
-    $(LOCAL_DIR)/aosp_car_x86.mk \
-    $(LOCAL_DIR)/aosp_car_x86_64.mk \
-    $(LOCAL_DIR)/aosp_car_x86_64_app.mk \
-    $(LOCAL_DIR)/car_x86_64.mk \
+$(call inherit-product, device/generic/car/common/car.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_64bitonly_x86_64.mk)
 
-COMMON_LUNCH_CHOICES := \
-    aosp_car_arm-userdebug \
-    aosp_car_arm64-userdebug \
-    aosp_car_x86-userdebug \
-    aosp_car_x86_64-userdebug \
-    aosp_car_x86_64_app-userdebug \
-    car_x86_64-userdebug \
-
-EMULATOR_VENDOR_NO_SOUND_TRIGGER := false
+# This build configuration supports 64-bit apps only
+PRODUCT_NAME := aosp_car_x86_64_app
+PRODUCT_DEVICE := generic_64bitonly_x86_64
+PRODUCT_BRAND := Android
+PRODUCT_MODEL := Car on x86_64 64-bit app only emulator
