@@ -42,10 +42,6 @@
         <install-in user-type="FULL" />
         <install-in user-type="SYSTEM" />
     </install-in-user-type>
-    <install-in-user-type package="com.android.systemui.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-        <install-in user-type="SYSTEM" />
-    </install-in-user-type>
     <install-in-user-type package="com.android.traceur">
         <install-in user-type="FULL" />
         <install-in user-type="SYSTEM" />
@@ -69,16 +65,6 @@
         <install-in user-type="SYSTEM" />
     </install-in-user-type>
 
-    <!-- Required for SettingHelperTest -->
-    <install-in-user-type package="com.android.car.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-        <install-in user-type="SYSTEM" />
-    </install-in-user-type>
-    <install-in-user-type package="com.android.car.auto_generated_rro_vendor__">
-        <install-in user-type="FULL" />
-        <install-in user-type="SYSTEM" />
-    </install-in-user-type>
-
     <!-- Required for Wifi -->
     <install-in-user-type package="com.android.networkstack">
         <install-in user-type="FULL" />
@@ -91,11 +77,6 @@
         <install-in user-type="SYSTEM" />
     </install-in-user-type>
 
-    <!-- Required for DirectRenderingCluster -->
-    <install-in-user-type package="android.car.cluster.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-        <install-in user-type="SYSTEM" />
-    </install-in-user-type>
 <!--
   Apps that do need to run on SYSTEM and evaluated by package owner.
   Here the apps will have FULL only.
@@ -245,9 +226,6 @@
     <install-in-user-type package="com.android.car.voicecontrol">
         <install-in user-type="FULL" />
     </install-in-user-type>
-        <install-in-user-type package="com.android.car.voicecontrol.auto_generated_rro_product__">
-    <install-in user-type="FULL" />
-    </install-in-user-type>
     <install-in-user-type package="com.android.documentsui">
         <install-in user-type="FULL" />
     </install-in-user-type>
@@ -257,25 +235,7 @@
     <install-in-user-type package="com.android.car.datacenter">
         <install-in user-type="FULL" />
     </install-in-user-type>
-    <install-in-user-type package="com.android.car.bugreport.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
-    <install-in-user-type package="com.android.car.radio.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
-    <install-in-user-type package="com.android.bluetooth.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
     <install-in-user-type package="com.android.timezone.updater">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
-    <install-in-user-type package="com.android.car.auto_generated_rro_vendor__">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
-    <install-in-user-type package="com.android.providers.settings.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
-    <install-in-user-type package="com.android.traceur.auto_generated_rro_product__">
         <install-in user-type="FULL" />
     </install-in-user-type>
     <install-in-user-type package="com.android.sdksetup">
@@ -290,25 +250,13 @@
     <install-in-user-type package="com.android.theme.icon_pack.rounded.themepicker">
         <install-in user-type="FULL" />
     </install-in-user-type>
-    <install-in-user-type package="com.android.server.telecom.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
     <install-in-user-type package="com.android.service.ims">
         <install-in user-type="FULL" />
     </install-in-user-type>
     <install-in-user-type package="com.android.safetyregulatoryinfo">
         <install-in user-type="FULL" />
     </install-in-user-type>
-    <install-in-user-type package="com.android.settings.intelligence.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
-    <install-in-user-type package="com.android.providers.contacts.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
     <install-in-user-type package="com.android.networkstack.tethering">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
-    <install-in-user-type package="com.android.carrierconfig.auto_generated_rro_product__">
         <install-in user-type="FULL" />
     </install-in-user-type>
     <install-in-user-type package="com.android.emulator.multidisplay">
@@ -323,19 +271,10 @@
     <install-in-user-type package="com.android.apps.tag">
         <install-in user-type="FULL" />
     </install-in-user-type>
-    <install-in-user-type package="com.android.car.settings.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
     <install-in-user-type package="com.android.angle">
         <install-in user-type="FULL" />
     </install-in-user-type>
-    <install-in-user-type package="com.android.car.media.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
-    <install-in-user-type package="com.android.certinstaller.auto_generated_rro_product__">
-        <install-in user-type="FULL" />
-    </install-in-user-type>
-    <install-in-user-type package="com.android.car.carlauncher.auto_generated_rro_product__">
+    <install-in-user-type package="com.android.emulator.radio.config">
         <install-in user-type="FULL" />
     </install-in-user-type>
 
@@ -343,6 +282,11 @@
   Apps installed on multi-display emulator
   TODO: move to a MD-only XML file under vendor/auto/embedded/products
 -->
+    <!-- defaultToDeviceProtectedStorage -->
+    <install-in-user-type package="com.android.cellbroadcastreceiver.module">
+        <install-in user-type="FULL" />
+        <install-in user-type="SYSTEM" />
+    </install-in-user-type>
     <install-in-user-type package="com.android.car.secondaryhome">
         <install-in user-type="FULL" />
     </install-in-user-type>
