@@ -28,4 +28,4 @@ COMMON_LUNCH_CHOICES := \
     aosp_car_x86_64-userdebug \
     car_x86_64-userdebug \
 
-EMULATOR_VENDOR_NO_SOUND_TRIGGER := true
+EMULATOR_VENDOR_NO_SOUND_TRIGGER := false
