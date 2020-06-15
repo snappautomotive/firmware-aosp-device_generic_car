@@ -67,6 +67,8 @@
                 <item>Built-In Back Mic</item>
                 <item>Echo-Reference Mic</item>
                 <item>FM Tuner</item>
+                <item>Tone Generator 0</item>
+                <item>Tone Generator 1</item>
             </attachedDevices>
             <defaultOutputDevice>bus0_media_out</defaultOutputDevice>
             <mixPorts>
@@ -136,6 +138,16 @@
                              channelMasks="AUDIO_CHANNEL_IN_MONO,AUDIO_CHANNEL_IN_STEREO,AUDIO_CHANNEL_IN_FRONT_BACK"/>
                 </mixPort>
                 <mixPort name="mixport_tuner0" role="sink">
+                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                             samplingRates="48000"
+                             channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
+                </mixPort>
+                <mixPort name="mixport_input_bus_tone_zone_0" role="sink">
+                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                             samplingRates="48000"
+                             channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
+                </mixPort>
+                <mixPort name="mixport_input_bus_tone_zone_1" role="sink">
                     <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
                              samplingRates="48000"
                              channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
@@ -256,6 +268,24 @@
                                 minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
                     </gains>
                 </devicePort>
+                <devicePort tagName="Tone Generator 0" type="AUDIO_DEVICE_IN_BUS" role="source"
+                            address="input_bus_tone_zone_0">
+                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
+                    <gains>
+                        <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
+                              minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
+                    </gains>
+                </devicePort>
+                <devicePort tagName="Tone Generator 1" type="AUDIO_DEVICE_IN_BUS" role="source"
+                            address="input_bus_tone_zone_1">
+                    <profile name="" format="AUDIO_FORMAT_PCM_16_BIT"
+                             samplingRates="48000" channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
+                    <gains>
+                        <gain name="" mode="AUDIO_GAIN_MODE_JOINT"
+                              minValueMB="-3200" maxValueMB="600" defaultValueMB="0" stepValueMB="100"/>
+                    </gains>
+                </devicePort>
             </devicePorts>
             <!-- route declaration, i.e. list all available sources for a given sink -->
             <routes>
@@ -271,6 +301,8 @@
                 <route type="mix" sink="bus200_audio_zone_2" sources="mixport_bus200_audio_zone_2"/>
                 <route type="mix" sink="primary input" sources="Built-In Mic,Built-In Back Mic,Echo-Reference Mic"/>
                 <route type="mix" sink="mixport_tuner0" sources="FM Tuner"/>
+                <route type="mix" sink="mixport_input_bus_tone_zone_0" sources="Tone Generator 0"/>
+                <route type="mix" sink="mixport_input_bus_tone_zone_1" sources="Tone Generator 1"/>
             </routes>
 
         </module>
