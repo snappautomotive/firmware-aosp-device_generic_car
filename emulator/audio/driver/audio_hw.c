@@ -51,19 +51,26 @@
 #define IN_PERIOD_MS 15
 #define IN_PERIOD_COUNT 4
 
+#define PI 3.14159265
+#define TWO_PI  (2*PI)
+
+// 150 Hz
+#define DEFAULT_FREQUENCY 150
+// Increase in changes to tone frequency
+#define TONE_FREQUENCY_INCREASE 20
+// Max tone frequency to auto assign, don't want to generate too high of a pitch
+#define MAX_TONE_FREQUENCY 500
+
 #define _bool_str(x) ((x)?"true":"false")
 
 static const char * const PROP_KEY_SIMULATE_MULTI_ZONE_AUDIO = "ro.aae.simulateMultiZoneAudio";
 static const char * const AAE_PARAMETER_KEY_FOR_SELECTED_ZONE = "com.android.car.emulator.selected_zone";
-// Lapse time between checking audio id changes
-#define DEFAULT_PLAYZONE_ID_ELAPSE_TIME_MS 300.0f
-#define MILLISECONDS_TO_MICROSECONDS 1000.0f
-#define SECONDS_TO_MILLISECONDS 1000.0f
 #define PRIMARY_ZONE_ID 0
 #define INVALID_ZONE_ID -1
 // Note the primary zone goes to left speaker so route other zone to right speaker
 #define DEFAULT_ZONE_TO_LEFT_SPEAKER (PRIMARY_ZONE_ID + 1)
 
+static const char * const TONE_ADDRESS_KEYWORD = "_tone_";
 static const char * const AUDIO_ZONE_KEYWORD = "_audio_zone_";
 
 #define SIZE_OF_PARSE_BUFFER 32
@@ -104,11 +111,6 @@ static struct pcm_config pcm_config_in = {
     .start_threshold = 0,
     .stop_threshold = INT_MAX,
 };
-
-float time_difference_msec(struct timeval t0, struct timeval t1) {
-    return (t1.tv_sec - t0.tv_sec) * SECONDS_TO_MILLISECONDS +
-        (t1.tv_usec - t0.tv_usec) / MILLISECONDS_TO_MICROSECONDS;
-}
 
 static pthread_mutex_t adev_init_lock = PTHREAD_MUTEX_INITIALIZER;
 static unsigned int audio_device_ref_count = 0;
@@ -796,14 +798,17 @@ static int in_standby(struct audio_stream *stream) {
     return 0;
 }
 
-#define STEP (3.14159265 / 180)
-// Generates pure tone for FM_TUNER
-static int pseudo_pcm_read(void *data, unsigned int count) {
-    unsigned int length = count / sizeof(short);
-    short *sdata = (short *)data;
+// Generates pure tone for FM_TUNER and bus_device
+static int pseudo_pcm_read(void *data, unsigned int count, struct oscillator *oscillator) {
+    unsigned int length = count / sizeof(int16_t);
+    int16_t *sdata = (int16_t *)data;
     for (int index = 0; index < length; index++) {
-        sdata[index] = (short)(sin(index * STEP) * 4096);
+        sdata[index] = (int16_t)(sin(oscillator->phase) * 4096);
+        oscillator->phase += oscillator->phase_increment;
+        oscillator->phase = oscillator->phase > TWO_PI ?
+            oscillator->phase - TWO_PI : oscillator->phase;
     }
+
     return count;
 }
 
@@ -885,6 +890,15 @@ static void *in_read_worker(void *args) {
     return NULL;
 }
 
+static bool address_has_tone_keyword(char * address) {
+    return strstr(address, TONE_ADDRESS_KEYWORD) != NULL;
+}
+
+static bool is_tone_generator_device(struct generic_stream_in *in) {
+    return in->device == AUDIO_DEVICE_IN_FM_TUNER || ((in->device == AUDIO_DEVICE_IN_BUS) &&
+        address_has_tone_keyword(in->bus_address));
+}
+
 static ssize_t in_read(struct audio_stream_in *stream, void *buffer, size_t bytes) {
     struct generic_stream_in *in = (struct generic_stream_in *)stream;
     struct generic_audio_device *adev = in->dev;
@@ -899,8 +913,9 @@ static ssize_t in_read(struct audio_stream_in *stream, void *buffer, size_t byte
     if (in->worker_standby) {
         in->worker_standby = false;
     }
-    // FM_TUNER fills the buffer via pseudo_pcm_read directly
-    if (in->device != AUDIO_DEVICE_IN_FM_TUNER) {
+
+    // Tone generators fill the buffer via pseudo_pcm_read directly
+    if (!is_tone_generator_device(in)) {
         pthread_cond_signal(&in->worker_wake);
     }
 
@@ -937,8 +952,8 @@ static ssize_t in_read(struct audio_stream_in *stream, void *buffer, size_t byte
     }
     in->standby_frames_read += frames;
 
-    if (in->device == AUDIO_DEVICE_IN_FM_TUNER) {
-        int read_bytes = pseudo_pcm_read(buffer, bytes);
+    if (is_tone_generator_device(in)) {
+        int read_bytes = pseudo_pcm_read(buffer, bytes, &in->oscillator);
         read_frames = read_bytes / audio_stream_in_frame_size(stream);
     } else if (popcount(in->req_config.channel_mask) == 1 &&
         in->pcm_config.channels == 2) {
@@ -1140,7 +1155,7 @@ static int adev_set_parameters(struct audio_hw_device *dev, const char *kvpairs)
     return results;
 }
 
-static char *adev_get_parameters(const struct audio_hw_device *dev, const char *keys) {
+static char *adev_get_parameters(const struct audio_hw_device * dev, const char *keys) {
     return NULL;
 }
 
@@ -1230,6 +1245,25 @@ static void adev_close_input_stream(struct audio_hw_device *dev,
     free(stream);
 }
 
+static void increase_next_tone_frequency(struct generic_audio_device *adev) {
+    adev->next_tone_frequency_to_assign += TONE_FREQUENCY_INCREASE;
+    if (adev->next_tone_frequency_to_assign > MAX_TONE_FREQUENCY) {
+        adev->next_tone_frequency_to_assign = DEFAULT_FREQUENCY;
+    }
+}
+
+static int create_or_fetch_tone_frequency(struct generic_audio_device *adev,
+        char *address, int update_frequency) {
+    int *frequency = hashmapGet(adev->in_bus_tone_frequency_map, address);
+    if (frequency == NULL) {
+        frequency = calloc(1, sizeof(int));
+        *frequency = update_frequency;
+        hashmapPut(adev->in_bus_tone_frequency_map, strdup(address), frequency);
+        ALOGD("%s assigned frequency %d to %s", __func__, *frequency, address);
+    }
+    return *frequency;
+}
+
 static int adev_open_input_stream(struct audio_hw_device *dev,
         audio_io_handle_t handle, audio_devices_t devices, struct audio_config *config,
         struct audio_stream_in **stream_in, audio_input_flags_t flags __unused, const char *address,
@@ -1297,8 +1331,17 @@ static int adev_open_input_stream(struct audio_hw_device *dev,
     }
 
     if (address) {
-        in->bus_address = calloc(strlen(address) + 1, sizeof(char));
-        strncpy(in->bus_address, address, strlen(address));
+        in->bus_address = strdup(address);
+        if (is_tone_generator_device(in)) {
+            int update_frequency = adev->next_tone_frequency_to_assign;
+            int frequency = create_or_fetch_tone_frequency(adev, address, update_frequency);
+            if (update_frequency == frequency) {
+                increase_next_tone_frequency(adev);
+            }
+            in->oscillator.phase = 0.0f;
+            in->oscillator.phase_increment = (TWO_PI*(frequency))
+                / ((float) in_get_sample_rate(&in->stream.common));
+        }
     }
 
     *stream_in = &in->stream;
@@ -1394,6 +1437,9 @@ static int adev_close(hw_device_t *dev) {
         }
         if (adev->out_bus_stream_map) {
             hashmapFree(adev->out_bus_stream_map);
+        }
+        if (adev->in_bus_tone_frequency_map) {
+            hashmapFree(adev->in_bus_tone_frequency_map);
         }
         free(adev);
     }
@@ -1503,6 +1549,11 @@ static int adev_open(const hw_module_t *module,
 
     // Initialize the bus address to output stream map
     adev->out_bus_stream_map = hashmapCreate(5, str_hash_fn, str_eq);
+
+    // Initialize the bus address to input stream map
+    adev->in_bus_tone_frequency_map = hashmapCreate(5, str_hash_fn, str_eq);
+
+    adev->next_tone_frequency_to_assign = DEFAULT_FREQUENCY;
 
     adev->last_zone_selected_to_play = DEFAULT_ZONE_TO_LEFT_SPEAKER;
 
