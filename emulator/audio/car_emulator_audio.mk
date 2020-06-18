@@ -14,6 +14,9 @@
 # limitations under the License.
 
 PRODUCT_PACKAGES += audio.primary.caremu
+PRODUCT_PACKAGES += \
+    android.hardware.audio@6.0-impl:32
+
 PRODUCT_PROPERTY_OVERRIDES += ro.hardware.audio.primary=caremu
 
 PRODUCT_COPY_FILES += \
