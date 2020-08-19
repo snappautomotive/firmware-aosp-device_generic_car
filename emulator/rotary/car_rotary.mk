@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2019 The Android Open Source Project
+# Copyright (C) 2020 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,14 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+##
+# Car Rotary Controller for Android Automotive.
 
-$(call inherit-product, device/generic/car/common/car.mk)
-# This overrides device/generic/car/common/car.mk
-$(call inherit-product, device/generic/car/emulator/audio/car_emulator_audio.mk)
-$(call inherit-product, device/generic/car/emulator/rotary/car_rotary.mk)
-
-ifeq (true,$(BUILD_EMULATOR_CLUSTER_DISPLAY))
-PRODUCT_PRODUCT_PROPERTIES += \
-    hwservicemanager.external.displays=1,1080,600,120,0 \
-    persist.service.bootanim.displays=8140900251843329
-endif
+PRODUCT_PACKAGES += CarRotaryController
+PRODUCT_PACKAGES += RotaryIME
