@@ -23,3 +23,7 @@ PRODUCT_PRODUCT_PROPERTIES += \
     hwservicemanager.external.displays=1,1080,600,120,0 \
     persist.service.bootanim.displays=8140900251843329
 endif
+
+# Define the host tools and libs that are parts of the SDK.
+$(call inherit-product, sdk/build/product_sdk.mk)
+$(call inherit-product, development/build/product_sdk.mk)
