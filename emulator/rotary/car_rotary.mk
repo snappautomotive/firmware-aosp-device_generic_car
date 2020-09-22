@@ -17,3 +17,5 @@
 
 PRODUCT_PACKAGES += CarRotaryController
 PRODUCT_PACKAGES += RotaryIME
+
+DEVICE_PACKAGE_OVERLAYS += device/generic/car/emulator/rotary/overlay
