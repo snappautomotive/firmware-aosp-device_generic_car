@@ -15,7 +15,9 @@
 ##
 # Car Rotary Controller for Android Automotive.
 
-PRODUCT_PACKAGES += CarRotaryController
-PRODUCT_PACKAGES += RotaryIME
+PRODUCT_PACKAGES += \
+    CarRotaryController \
+    RotaryPlayground \
+    RotaryIME \
 
 DEVICE_PACKAGE_OVERLAYS += device/generic/car/emulator/rotary/overlay
