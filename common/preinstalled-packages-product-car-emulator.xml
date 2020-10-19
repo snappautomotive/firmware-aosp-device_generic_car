@@ -228,6 +228,15 @@
     <install-in-user-type package="com.android.car.retaildemo">
         <install-in user-type="FULL" />
     </install-in-user-type>
+    <install-in-user-type package="com.android.car.rotary">
+        <install-in user-type="FULL" />
+    </install-in-user-type>
+    <install-in-user-type package="com.android.car.rotaryime">
+        <install-in user-type="FULL" />
+    </install-in-user-type>
+    <install-in-user-type package="com.android.car.rotaryplayground">
+        <install-in user-type="FULL" />
+    </install-in-user-type>
     <install-in-user-type package="com.android.car.voicecontrol">
         <install-in user-type="FULL" />
     </install-in-user-type>
