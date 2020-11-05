@@ -12,12 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-$(call inherit-product, device/generic/car/common/car.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_64bitonly_x86_64.mk)
+include build/make/target/board/generic_x86/BoardConfig.mk
 
-# This build configuration supports 64-bit apps only
-PRODUCT_NAME := aosp_car_x86_64_app
-PRODUCT_DEVICE := generic_64bitonly_x86_64
-PRODUCT_BRAND := Android
-PRODUCT_MODEL := Car on x86_64 64-bit app only emulator
+# Override BOARD_SUPER_PARTITION_SIZE to inclease the mounted system partition.
+BOARD_SUPER_PARTITION_SIZE := 5856296960
